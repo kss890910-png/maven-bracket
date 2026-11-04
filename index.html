@@ -4,212 +4,238 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>MaveN 2회 클럽 내전</title>
+<meta name="description" content="프리스타일 리부트 3대3 · MaveN 2회 클럽 내전 8팀 토너먼트 대진표">
 <meta property="og:title" content="MaveN 2회 클럽 내전">
 <meta property="og:description" content="프리스타일 리부트 3대3 · 8팀 토너먼트 대진표">
-<meta property="og:image" content="assets/logo.jpg">
+<meta property="og:image" content="https://kss890910-png.github.io/maven-bracket/assets/logo.jpg">
 <link rel="icon" href="assets/logo.jpg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=IBM+Plex+Sans+KR:wght@400;500;700&family=Oswald:wght@500;600;700&display=swap">
 <style>
-/* Layout: MaveN crest colors (black, brushed silver, gold). Key-art banner with the crest on top, round progress strip,
-   then the bracket left → right. A checked winner lights a gold line from their slot into the next match. */
+/* Layout: an event poster. Slanted key-art panel and drawn light streaks up top, a team ticker, then the bracket on a
+   faint drawn court. Gold = MaveN crest and winners, ball orange = match numbers. Single dark look on purpose. */
 :root {
-  --bg: #0a0a0b;
-  --panel: #141416;
-  --panel-2: #1c1c1f;
-  --line: #2d2d32;
-  --silver: #e3e4e8;
-  --muted: #8e8f97;
-  --gold: #e2b23f;
-  --gold-hi: #f8db86;
-  --ball: #f07a2a;
+  --bg: #08080a;
+  --panel: #131316;
+  --panel-2: #1b1b1f;
+  --line: #2c2c32;
+  --silver: #e6e7eb;
+  --muted: #8d8e96;
+  --gold: #e4b443;
+  --gold-hi: #fbe39a;
+  --gold-lo: #9c6f19;
+  --ball: #f37a2b;
   --f-display: "Black Han Sans", "IBM Plex Sans KR", "Malgun Gothic", sans-serif;
   --f-body: "IBM Plex Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
   --f-num: "Oswald", "Arial Narrow", "IBM Plex Sans KR", sans-serif;
   color-scheme: dark;
 }
 * { box-sizing: border-box; }
-body { background: var(--bg); color: var(--silver); font-family: var(--f-body); font-size: 15px; line-height: 1.5; }
+html, body { margin: 0; }
+body {
+  background: var(--bg); color: var(--silver);
+  font-family: var(--f-body); font-size: 15px; line-height: 1.5;
+  padding-block: env(safe-area-inset-top, 0px) env(safe-area-inset-bottom, 0px);
+  overflow-x: hidden;
+}
+img { max-width: 100%; }
+[hidden] { display: none !important; }
 .wrap {
   max-width: 1280px; margin: 0 auto;
   padding-left: max(16px, env(safe-area-inset-left, 0px));
   padding-right: max(16px, env(safe-area-inset-right, 0px));
 }
 .gold-text {
-  background: linear-gradient(180deg, var(--gold-hi), var(--gold) 55%, #a87a1e);
+  background: linear-gradient(176deg, var(--gold-hi) 8%, var(--gold) 46%, var(--gold-lo) 70%, var(--gold) 92%);
   -webkit-background-clip: text; background-clip: text; color: transparent;
 }
 
-/* ---------- hero ---------- */
-.banner { position: relative; overflow: hidden; border-bottom: 1px solid var(--line); }
-.banner .art {
-  position: absolute; inset: 0;
-  /* whole key art, height-fitted on the right so no character is cropped */
-  background: url("assets/keyart.jpg") right center / auto 100% no-repeat;
-}
-.banner .art::after {
-  content: ""; position: absolute; inset: 0;
-  background:
-    linear-gradient(90deg, var(--bg) 0%, var(--bg) max(0px, calc(100% - 900px)), rgba(10,10,11,.55) calc(100% - 620px), rgba(10,10,11,0) calc(100% - 420px));
-}
+/* ---------- hero poster ---------- */
 .hero {
+  position: relative; overflow: hidden;
+  background:
+    radial-gradient(900px 520px at 22% 48%, rgba(228,180,67,.16), transparent 62%),
+    radial-gradient(700px 500px at 88% 0%, rgba(243,122,43,.12), transparent 65%),
+    var(--bg);
+  border-bottom: 1px solid var(--line);
+}
+.hero::before { /* halftone dots */
+  content: ""; position: absolute; inset: 0;
+  background-image: radial-gradient(rgba(228,180,67,.22) 1px, transparent 1.6px);
+  background-size: 14px 14px;
+  -webkit-mask-image: linear-gradient(100deg, #000 0%, transparent 45%);
+  mask-image: linear-gradient(100deg, #000 0%, transparent 45%);
+  pointer-events: none;
+}
+.streaks { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.hero-inner {
   position: relative;
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  gap: 28px;
-  align-items: center;
-  padding-block: 48px;
-  min-height: 460px;
+  display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+  gap: 24px; align-items: center;
+  padding-block: 40px 52px;
 }
+.brand { display: flex; align-items: center; gap: 16px; margin-bottom: 18px; }
 .crest {
-  width: clamp(150px, 18vw, 210px); aspect-ratio: 1; max-width: 100%;
-  border-radius: 50%;
-  object-fit: cover;
-  box-shadow: 0 0 0 2px color-mix(in srgb, var(--gold) 60%, transparent), 0 0 60px -10px color-mix(in srgb, var(--gold) 55%, transparent);
+  width: 96px; height: 96px; border-radius: 50%; object-fit: cover; flex: none;
+  box-shadow: 0 0 0 2px var(--gold), 0 0 40px -6px rgba(228,180,67,.7);
 }
-.eyebrow {
-  font-family: var(--f-num); letter-spacing: .3em; text-transform: uppercase;
-  font-size: 13px; color: var(--gold);
-  display: flex; align-items: center; gap: 10px;
-}
-.eyebrow i { width: 28px; height: 2px; background: var(--gold); display: inline-block; }
-h1 { margin: 10px 0 0; font-weight: 400; line-height: 1; text-wrap: balance; }
+.eyebrow { font-family: var(--f-num); letter-spacing: .32em; font-size: 12px; color: var(--gold); text-transform: uppercase; line-height: 1.7; }
+.eyebrow span { display: block; color: var(--muted); letter-spacing: .24em; }
+h1 { margin: 0; font-weight: 400; }
 h1 .club {
   display: block;
   font-family: var(--f-num); font-weight: 700; font-style: italic;
-  font-size: clamp(56px, 9vw, 120px); letter-spacing: -.01em; line-height: .9;
-  text-shadow: 0 8px 30px rgba(0,0,0,.6);
+  font-size: clamp(76px, 12vw, 168px); line-height: .82; letter-spacing: -.02em;
+  filter: drop-shadow(0 10px 24px rgba(0,0,0,.6));
 }
-h1 .club .n { color: var(--silver); }
-h1 .ev {
-  display: block; margin-top: 12px;
-  font-family: var(--f-display); font-size: clamp(28px, 3.6vw, 44px); color: var(--silver);
+h1 .club .n { -webkit-text-stroke: 2px var(--gold); color: transparent; background: none; }
+.ribbon {
+  display: inline-flex; align-items: baseline; gap: 12px;
+  margin: 14px 0 0 6px; padding: 8px 22px 9px;
+  background: linear-gradient(90deg, var(--gold), var(--gold-hi) 55%, var(--gold));
+  color: #17110a; transform: skewX(-14deg);
+  box-shadow: 6px 6px 0 var(--ball);
 }
-h1 .ev b { font-weight: 400; color: var(--gold); }
-.facts { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
-.fact {
-  border: 1px solid rgba(227,228,232,.18); border-radius: 999px; padding: 5px 13px;
-  font-size: 13px; background: rgba(10,10,11,.6); backdrop-filter: blur(4px);
+.ribbon > * { transform: skewX(14deg); }
+.ribbon b { font-family: var(--f-display); font-weight: 400; font-size: clamp(26px, 3.4vw, 40px); line-height: 1; }
+.ribbon small { font-family: var(--f-num); font-weight: 700; letter-spacing: .2em; font-size: 13px; }
+.facts { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 26px; }
+.fact { border: 1px solid rgba(230,231,235,.16); border-radius: 4px; padding: 6px 12px; font-size: 13px; background: rgba(8,8,10,.6); }
+.fact b { font-family: var(--f-num); font-weight: 700; font-size: 16px; margin-right: 4px; color: var(--gold); }
+
+.poster { position: relative; justify-self: end; width: 100%; max-width: 600px; }
+.poster .frame {
+  position: relative;
+  clip-path: polygon(14% 0, 100% 0, 86% 100%, 0 100%);
+  aspect-ratio: 1280 / 780;
+  background: var(--gold);
+  padding: 4px;
+  filter: drop-shadow(0 30px 40px rgba(0,0,0,.6));
 }
-.fact b { font-family: var(--f-num); font-weight: 600; font-size: 15px; margin-right: 4px; color: var(--gold); }
-.motto { margin-top: 14px; font-family: var(--f-num); letter-spacing: .25em; font-size: 12px; color: var(--muted); text-transform: uppercase; }
+.poster .frame img {
+  display: block; width: 100%; height: 100%; object-fit: cover;
+  clip-path: polygon(14% 0, 100% 0, 86% 100%, 0 100%);
+}
+.poster .stamp {
+  position: absolute; left: 2%; top: -6%;
+  width: 96px; height: 96px; border-radius: 50%;
+  display: grid; place-items: center; text-align: center;
+  background: var(--ball); color: #fff;
+  font-family: var(--f-num); font-weight: 700; font-style: italic; line-height: .95;
+  transform: rotate(-12deg);
+  box-shadow: 0 0 0 4px var(--bg), 0 0 0 6px var(--ball), 0 14px 30px rgba(0,0,0,.5);
+}
+.poster .stamp b { display: block; font-size: 30px; }
+.poster .stamp small { font-size: 12px; letter-spacing: .14em; }
+.poster .vert {
+  position: absolute; right: -4px; top: 50%;
+  transform: translateY(-50%) rotate(90deg); transform-origin: right center;
+  font-family: var(--f-num); letter-spacing: .5em; font-size: 12px; color: var(--muted); white-space: nowrap;
+}
+.credit { position: absolute; right: 16%; bottom: -22px; font-size: 11px; color: var(--muted); }
+
+/* ---------- ticker ---------- */
+.ticker { overflow: hidden; border-bottom: 1px solid var(--line); background: var(--panel); }
+.ticker .track { display: flex; width: max-content; gap: 0; }
+.ticker .seg { display: flex; align-items: center; gap: 28px; padding: 10px 14px; white-space: nowrap; font-size: 13px; color: var(--muted); }
+.ticker .seg b { font-family: var(--f-num); font-style: italic; color: var(--gold); font-size: 15px; margin-right: 6px; }
+.ticker .seg i { color: var(--ball); font-style: normal; }
+@media (prefers-reduced-motion: no-preference) {
+  .ticker .track { animation: tick 60s linear infinite; }
+  @keyframes tick { to { transform: translateX(-50%); } }
+}
 
 /* ---------- status + progress ---------- */
-.status { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 16px; align-items: center; padding-block: 22px 4px; }
+.status { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 16px; align-items: center; padding-block: 26px 4px; }
 .progress { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
-.step {
-  display: flex; align-items: center; gap: 10px;
-  padding: 8px 14px; border-radius: 10px;
-  background: var(--panel); border: 1px solid var(--line);
-}
+.step { display: flex; align-items: center; gap: 10px; padding: 8px 14px; border-radius: 6px; background: var(--panel); border: 1px solid var(--line); }
 .step .nm { font-family: var(--f-display); font-size: 16px; }
 .step .ct { font-family: var(--f-num); font-weight: 600; font-variant-numeric: tabular-nums; color: var(--muted); }
 .step .pips { display: flex; gap: 4px; }
 .step .pips i { width: 9px; height: 9px; border-radius: 50%; background: var(--line); display: block; }
-.step .pips i.on { background: var(--gold); }
-.step.done { border-color: color-mix(in srgb, var(--gold) 55%, var(--line)); }
+.step .pips i.on { background: var(--gold); box-shadow: 0 0 6px rgba(228,180,67,.8); }
+.step.done { border-color: rgba(228,180,67,.55); }
 .step.done .ct { color: var(--gold); }
 .arrow { color: var(--line); font-family: var(--f-num); }
-.mode {
-  display: inline-flex; align-items: center; gap: 8px;
-  font-size: 13px; color: var(--muted);
-  border: 1px solid var(--line); border-radius: 999px; padding: 6px 13px; background: var(--panel);
-  white-space: nowrap;
-}
+.mode { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); border: 1px solid var(--line); border-radius: 999px; padding: 6px 13px; background: var(--panel); white-space: nowrap; }
 .mode .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--muted); }
-.mode.admin { color: var(--gold); border-color: color-mix(in srgb, var(--gold) 50%, var(--line)); }
-.mode.admin .dot, .mode.live .dot { background: var(--gold); box-shadow: 0 0 0 3px color-mix(in srgb, var(--gold) 25%, transparent); }
+.mode.admin { color: var(--gold); border-color: rgba(228,180,67,.5); }
+.mode.admin .dot, .mode.live .dot { background: var(--gold); box-shadow: 0 0 0 3px rgba(228,180,67,.25); }
 .mode.warn .dot { background: var(--ball); }
 .help { font-size: 13px; color: var(--muted); margin: 8px 0 0; }
 .help b { color: var(--silver); font-weight: 600; }
 
-/* ---------- bracket ---------- */
-.scroller { overflow-x: auto; padding-block: 14px 36px; }
+/* ---------- bracket on a drawn court ---------- */
+.arena { position: relative; }
+.court { position: absolute; inset: 40px 0 20px; width: 100%; height: calc(100% - 60px); pointer-events: none; opacity: .9; }
+.scroller { position: relative; overflow-x: auto; padding-block: 14px 36px; }
 .bracket {
   position: relative; display: grid;
-  grid-template-columns: repeat(3, minmax(228px, 1fr)) minmax(232px, 270px);
+  grid-template-columns: repeat(3, minmax(228px, 1fr)) minmax(240px, 280px);
   column-gap: 44px; row-gap: 22px;
-  min-width: calc(228px * 3 + 232px + 44px * 3);
+  min-width: calc(228px * 3 + 240px + 44px * 3);
 }
-.rnd-head {
-  grid-row: 1; margin-bottom: -10px;
-  font-family: var(--f-num); letter-spacing: .2em; font-size: 12px; color: var(--muted); text-transform: uppercase;
-  display: flex; gap: 8px; align-items: baseline;
+.rnd-head { grid-row: 1; margin-bottom: -8px; display: flex; }
+.rnd-head span {
+  display: inline-flex; gap: 8px; align-items: baseline;
+  padding: 4px 14px 5px; transform: skewX(-14deg);
+  background: var(--panel-2); border-left: 3px solid var(--gold);
 }
-.rnd-head b { font-family: var(--f-display); font-weight: 400; letter-spacing: 0; font-size: 18px; color: var(--silver); }
+.rnd-head span > * { transform: skewX(14deg); }
+.rnd-head b { font-family: var(--f-display); font-weight: 400; font-size: 18px; color: var(--silver); }
+.rnd-head small { font-family: var(--f-num); letter-spacing: .2em; font-size: 11px; color: var(--muted); text-transform: uppercase; }
 svg.wires { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; }
-svg.wires path { fill: none; stroke: var(--line); stroke-width: 2; }
-svg.wires path.on { stroke: var(--gold); stroke-width: 3; filter: drop-shadow(0 0 4px color-mix(in srgb, var(--gold) 60%, transparent)); }
+svg.wires path { fill: none; stroke: #34343b; stroke-width: 2; }
+svg.wires path.on { stroke: var(--gold); stroke-width: 3; filter: drop-shadow(0 0 5px rgba(228,180,67,.7)); }
 svg.wires path.fresh { stroke-dasharray: 400; stroke-dashoffset: 400; animation: draw .7s ease-out forwards; }
 @keyframes draw { to { stroke-dashoffset: 0; } }
 
 .match {
   position: relative; z-index: 1; align-self: center;
-  background: var(--panel); border: 1px solid var(--line); border-radius: 10px; overflow: hidden;
-  box-shadow: 0 14px 30px -18px #000;
+  background: linear-gradient(180deg, var(--panel-2), var(--panel));
+  border: 1px solid var(--line); border-radius: 8px; overflow: hidden;
+  box-shadow: 0 18px 30px -18px #000;
 }
-.match.done { border-color: color-mix(in srgb, var(--gold) 55%, var(--line)); }
+.match.done { border-color: rgba(228,180,67,.55); }
+.match.m7 { border-color: rgba(228,180,67,.4); box-shadow: 0 0 0 1px rgba(228,180,67,.15), 0 0 50px -16px rgba(228,180,67,.5); }
 .m-head {
   display: flex; justify-content: space-between; align-items: center; gap: 8px;
-  padding: 6px 12px; background: var(--panel-2); border-bottom: 1px solid var(--line);
+  padding: 6px 12px; border-bottom: 1px solid var(--line);
   font-family: var(--f-num); font-size: 13px; letter-spacing: .08em;
+  background: rgba(0,0,0,.25);
 }
-.m-head .no { color: var(--ball); font-weight: 700; }
+.m-head .no { color: var(--ball); font-weight: 700; font-style: italic; }
 .m-head .st { color: var(--muted); font-family: var(--f-body); font-size: 12px; letter-spacing: 0; }
 .match.done .m-head .st { color: var(--gold); }
-
 .slot { display: grid; grid-template-columns: 40px minmax(0, 1fr) auto; align-items: stretch; min-height: 72px; }
 .slot + .slot { border-top: 1px solid var(--line); }
-.seed {
-  display: grid; place-items: center;
-  font-family: var(--f-num); font-weight: 700; font-size: 19px; color: var(--muted);
-  border-right: 1px solid var(--line); font-variant-numeric: tabular-nums;
-}
+.seed { display: grid; place-items: center; font-family: var(--f-num); font-weight: 700; font-style: italic; font-size: 19px; color: var(--muted); border-right: 1px solid var(--line); font-variant-numeric: tabular-nums; }
 .who { padding: 8px 10px; min-width: 0; display: flex; flex-direction: column; justify-content: center; gap: 5px; }
 .who .tn { font-weight: 700; font-size: 14px; display: flex; align-items: center; gap: 6px; }
 .who .wait { color: var(--muted); font-size: 13px; font-style: normal; }
-.badge {
-  font-family: var(--f-num); font-size: 11px; letter-spacing: .1em; font-weight: 700;
-  padding: 1px 6px; border-radius: 3px; background: var(--gold); color: #1a1405;
-}
+.badge { font-family: var(--f-num); font-size: 11px; letter-spacing: .1em; font-weight: 700; padding: 1px 6px; border-radius: 3px; background: var(--gold); color: #1a1405; }
 .mem { display: flex; flex-wrap: wrap; gap: 4px; }
-.mem span {
-  font-size: 12px; line-height: 1; padding: 4px 7px; border-radius: 4px;
-  background: var(--panel-2); color: color-mix(in srgb, var(--silver) 85%, var(--muted)); white-space: nowrap;
-}
+.mem span { font-size: 12px; line-height: 1; padding: 4px 7px; border-radius: 3px; background: rgba(255,255,255,.05); color: #cfd0d6; white-space: nowrap; }
 .side { display: flex; align-items: stretch; border-left: 1px solid var(--line); }
-.score {
-  width: 44px; border: 0; background: transparent; color: var(--silver);
-  font: 700 22px var(--f-num); text-align: center; font-variant-numeric: tabular-nums;
-  -moz-appearance: textfield;
-}
+.score { width: 44px; border: 0; background: transparent; color: var(--silver); font: 700 22px var(--f-num); text-align: center; font-variant-numeric: tabular-nums; -moz-appearance: textfield; }
 .score::-webkit-outer-spin-button, .score::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
 .score::placeholder { color: var(--line); }
 .score:read-only { cursor: default; }
-.check {
-  all: unset; box-sizing: border-box;
-  width: 46px; display: grid; place-items: center; cursor: pointer;
-  border-left: 1px solid var(--line);
-  font: 700 12px var(--f-body); color: var(--muted);
-}
-.check .box {
-  width: 22px; height: 22px; border-radius: 6px; border: 2px solid var(--line);
-  display: grid; place-items: center; margin-bottom: 2px;
-}
+.check { all: unset; box-sizing: border-box; width: 46px; display: grid; place-items: center; cursor: pointer; border-left: 1px solid var(--line); font: 700 12px var(--f-body); color: var(--muted); }
+.check .box { width: 22px; height: 22px; border-radius: 6px; border: 2px solid var(--line); display: grid; place-items: center; margin-bottom: 2px; }
 .check:hover .box { border-color: var(--gold); }
 .check[aria-pressed="true"] { color: var(--gold); }
 .check[aria-pressed="true"] .box { background: var(--gold); border-color: var(--gold); }
 .check[aria-pressed="true"] .box::after { content: ""; width: 6px; height: 11px; border: solid #1a1405; border-width: 0 3px 3px 0; transform: translateY(-1px) rotate(45deg); }
 .check:disabled { cursor: not-allowed; opacity: .35; }
 .check:focus-visible, .score:focus-visible, .btn:focus-visible { outline: 2px solid var(--gold-hi); outline-offset: -2px; }
-.slot.win { background: linear-gradient(90deg, color-mix(in srgb, var(--gold) 18%, transparent), transparent 85%); }
+.slot.win { background: linear-gradient(90deg, rgba(228,180,67,.2), transparent 85%); }
 .slot.win .seed, .slot.win .score { color: var(--gold); }
-.slot.lose .who, .slot.lose .score, .slot.lose .seed { opacity: .38; }
+.slot.lose .who, .slot.lose .score, .slot.lose .seed { opacity: .36; }
 .slot.lose .tn span:first-child { text-decoration: line-through; text-decoration-color: var(--muted); }
 .slot.arrive { animation: arrive 1s ease-out; }
-@keyframes arrive { 0% { background: color-mix(in srgb, var(--gold) 40%, transparent); } 100% { background: transparent; } }
-
+@keyframes arrive { 0% { background: rgba(228,180,67,.4); } 100% { background: transparent; } }
 .m1 { grid-column: 1; grid-row: 2; } .m2 { grid-column: 1; grid-row: 3; }
 .m3 { grid-column: 1; grid-row: 4; } .m4 { grid-column: 1; grid-row: 5; }
 .m5 { grid-column: 2; grid-row: 2 / 4; } .m6 { grid-column: 2; grid-row: 4 / 6; }
@@ -218,23 +244,34 @@ svg.wires path.fresh { stroke-dasharray: 400; stroke-dashoffset: 400; animation:
 /* ---------- champion ---------- */
 .champ {
   grid-column: 4; grid-row: 2 / 6; align-self: center;
-  position: relative; z-index: 1; text-align: center;
-  padding: 24px 22px; border-radius: 16px;
-  background: radial-gradient(circle at 50% 0%, color-mix(in srgb, var(--gold) 24%, transparent), transparent 65%), var(--panel);
-  border: 1px solid color-mix(in srgb, var(--gold) 40%, var(--line));
+  position: relative; z-index: 1; text-align: center; overflow: hidden;
+  padding: 18px 20px 24px; border-radius: 14px;
+  background:
+    radial-gradient(circle at 50% 28%, rgba(228,180,67,.28), transparent 60%),
+    linear-gradient(180deg, #17140d, var(--panel));
+  border: 1px solid rgba(228,180,67,.45);
 }
-.champ img { width: 110px; height: 110px; border-radius: 50%; display: block; margin: 0 auto 8px; opacity: .55; filter: grayscale(.6); }
-.champ.has img { opacity: 1; filter: none; box-shadow: 0 0 40px -6px color-mix(in srgb, var(--gold) 70%, transparent); }
-.champ .lbl { font-family: var(--f-num); letter-spacing: .4em; font-size: 13px; color: var(--gold); }
-.champ h2 { margin: 2px 0 14px; font-family: var(--f-num); font-style: italic; font-size: 44px; line-height: 1; }
-.champ .team { font-family: var(--f-display); font-size: 30px; min-height: 40px; }
+.champ::before { /* light rays */
+  content: ""; position: absolute; left: 50%; top: 30%; width: 520px; height: 520px; translate: -50% -50%;
+  background: repeating-conic-gradient(from 0deg, rgba(228,180,67,.09) 0 6deg, transparent 6deg 18deg);
+  -webkit-mask-image: radial-gradient(circle, #000 0 30%, transparent 62%);
+  mask-image: radial-gradient(circle, #000 0 30%, transparent 62%);
+  pointer-events: none;
+}
+.trophy { position: relative; width: 150px; height: 160px; display: block; margin: 0 auto 4px; }
+.champ .lbl { position: relative; font-family: var(--f-num); letter-spacing: .45em; font-size: 13px; color: var(--gold); }
+.champ h2 { position: relative; margin: 2px 0 12px; font-family: var(--f-num); font-style: italic; font-size: 44px; line-height: 1; }
+.champ .team { position: relative; font-family: var(--f-display); font-size: 30px; min-height: 40px; }
 .champ .team.empty { font-family: var(--f-body); font-size: 15px; color: var(--muted); font-weight: 500; }
-.champ .mem { justify-content: center; margin-top: 10px; }
-.champ .mem span { font-size: 14px; padding: 6px 10px; background: color-mix(in srgb, var(--gold) 16%, var(--panel-2)); color: var(--silver); }
-.champ.has { box-shadow: 0 0 0 1px var(--gold), 0 20px 60px -20px color-mix(in srgb, var(--gold) 60%, transparent); }
+.champ .mem { position: relative; justify-content: center; margin-top: 10px; }
+.champ .mem span { font-size: 14px; padding: 6px 10px; background: rgba(228,180,67,.16); color: var(--silver); }
+.champ:not(.has) .trophy { filter: grayscale(.85) brightness(.7); }
+.champ.has { box-shadow: 0 0 0 1px var(--gold), 0 24px 70px -20px rgba(228,180,67,.65); }
 @media (prefers-reduced-motion: no-preference) {
-  .champ.has img { animation: pop .7s ease-out; }
-  @keyframes pop { 0% { transform: scale(.7) rotate(-10deg); } 70% { transform: scale(1.08); } 100% { transform: none; } }
+  .champ.has .trophy { animation: pop .8s cubic-bezier(.2,1.4,.4,1); }
+  @keyframes pop { 0% { transform: scale(.6) rotate(-10deg); } 100% { transform: none; } }
+  .champ.has::before { animation: spin 40s linear infinite; }
+  @keyframes spin { to { rotate: 360deg; } }
 }
 @media (prefers-reduced-motion: reduce) {
   svg.wires path.fresh { animation: none; stroke-dashoffset: 0; }
@@ -242,124 +279,166 @@ svg.wires path.fresh { stroke-dasharray: 400; stroke-dashoffset: 400; animation:
 }
 
 /* ---------- roster ---------- */
-.roster h3 { font-family: var(--f-display); font-weight: 400; font-size: 24px; margin: 0 0 14px; }
+.roster h3, .sec-title { font-family: var(--f-display); font-weight: 400; font-size: 24px; margin: 0 0 14px; display: flex; align-items: center; gap: 12px; }
+.sec-title::after { content: ""; flex: 1; height: 1px; background: linear-gradient(90deg, var(--line), transparent); }
 .teams { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
-.tcard {
-  display: grid; grid-template-columns: 50px minmax(0, 1fr); gap: 12px; align-items: center;
-  padding: 12px 14px; border: 1px solid var(--line); border-radius: 10px; background: var(--panel);
-}
-.tcard .n { font-family: var(--f-num); font-style: italic; font-weight: 700; font-size: 30px; color: var(--silver); line-height: 1; font-variant-numeric: tabular-nums; }
-.tcard.out { opacity: .45; }
-.tcard.king { border-color: var(--gold); }
+.tcard { position: relative; overflow: hidden; display: grid; grid-template-columns: 54px minmax(0, 1fr); gap: 12px; align-items: center; padding: 12px 14px; border: 1px solid var(--line); border-radius: 8px; background: linear-gradient(135deg, var(--panel-2), var(--panel)); }
+.tcard .n { font-family: var(--f-num); font-style: italic; font-weight: 700; font-size: 34px; color: var(--silver); line-height: 1; font-variant-numeric: tabular-nums; }
+.tcard.out { opacity: .42; }
+.tcard.king { border-color: var(--gold); box-shadow: 0 0 30px -10px rgba(228,180,67,.6); }
 .tcard.king .n { color: var(--gold); }
 .tcard .st { font-size: 12px; color: var(--muted); margin-top: 4px; }
 .tcard .st.alive { color: var(--silver); }
 .tcard.king .st { color: var(--gold); }
 
-.admin-tools { display: flex; gap: 10px; align-items: center; justify-content: flex-end; margin-top: 18px; }
-.btn {
-  font: 600 13px var(--f-body); color: var(--silver);
-  background: var(--panel-2); border: 1px solid var(--line); border-radius: 8px; padding: 7px 12px; cursor: pointer;
-}
+.admin-tools { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: flex-end; margin-top: 18px; }
+.login { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.login input { font: 500 14px var(--f-body); color: var(--silver); background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 7px 10px; width: 160px; }
+.login input:focus-visible { outline: 2px solid var(--gold-hi); outline-offset: 1px; }
+.btn { font: 600 13px var(--f-body); color: var(--silver); background: var(--panel-2); border: 1px solid var(--line); border-radius: 8px; padding: 7px 12px; cursor: pointer; }
 .btn:hover { border-color: var(--ball); }
+.btn.ghost { background: transparent; color: var(--muted); }
 .btn.armed { border-color: var(--ball); color: var(--ball); }
 
-footer {
-  margin-top: 36px; padding-block: 18px 32px; border-top: 1px solid var(--line);
-  color: var(--muted); font-size: 12px;
-  display: flex; flex-wrap: wrap; gap: 8px 24px; justify-content: space-between;
-}
+footer { margin-top: 36px; padding-block: 18px 32px; border-top: 1px solid var(--line); color: var(--muted); font-size: 12px; display: flex; flex-wrap: wrap; gap: 8px 24px; justify-content: space-between; }
 
-@media (max-width: 760px) {
-  .hero { grid-template-columns: minmax(0, 1fr); padding-block: 28px 40px; gap: 18px; min-height: 0; }
-  .crest { width: 120px; }
-  .banner .art { background-size: cover; background-position: center top; }
-  .banner .art::after { background: linear-gradient(180deg, rgba(10,10,11,.5) 0%, rgba(10,10,11,.88) 55%, var(--bg) 100%); }
+@media (max-width: 860px) {
+  .hero-inner { grid-template-columns: minmax(0, 1fr); padding-block: 28px 44px; }
+  .poster { justify-self: stretch; max-width: 520px; }
+  .crest { width: 72px; height: 72px; }
   .status { grid-template-columns: minmax(0, 1fr); }
-  .bracket { grid-template-columns: repeat(3, 236px) 240px; column-gap: 36px; min-width: calc(236px * 3 + 240px + 36px * 3); }
+  .bracket { grid-template-columns: repeat(3, 236px) 244px; column-gap: 36px; min-width: calc(236px * 3 + 244px + 36px * 3); }
 }
-.admin-tools { flex-wrap: wrap; }
-.login { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
-.login input { font: 500 14px var(--f-body); color: var(--silver); background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 7px 10px; width: 150px; }
-.login input:focus-visible { outline: 2px solid var(--gold-hi); outline-offset: 1px; }
-.btn.ghost { background: transparent; color: var(--muted); }
-body { margin: 0; padding-block: env(safe-area-inset-top, 0px) env(safe-area-inset-bottom, 0px); }
-img { max-width: 100%; }
-[hidden] { display: none !important; }
 </style>
-
 </head>
 <body>
-<div class="banner">
-  <div class="art" role="img" aria-label="프리스타일 리부트 공식 키아트: 길거리 농구 캐릭터 네 명"></div>
-  <div class="wrap">
-    <header class="hero">
-      <img class="crest" alt="MaveN 클럽 마크" src="assets/logo.jpg">
-      <div>
-        <div class="eyebrow"><i></i>FreeStyle Reboot · 3 on 3</div>
-        <h1>
-          <span class="club gold-text">Mave<span class="n">N</span></span>
-          <span class="ev"><b>2회</b> 클럽 내전</span>
-        </h1>
-        <div class="facts">
-          <span class="fact"><b>8</b>팀</span>
-          <span class="fact"><b>3</b>대3 · 3인 1팀</span>
-          <span class="fact"><b>24</b>명 출전</span>
-          <span class="fact"><b>7</b>경기 토너먼트</span>
-        </div>
-        <div class="motto">Play together · Grow together</div>
-      </div>
-    </header>
-  </div>
-</div>
 
-<div class="wrap">
+<header class="hero">
+  <svg class="streaks" viewBox="0 0 1440 560" preserveAspectRatio="none" aria-hidden="true">
+    <defs>
+      <linearGradient id="sg" x1="0" x2="1"><stop offset="0" stop-color="#e4b443" stop-opacity="0"/><stop offset=".6" stop-color="#fbe39a" stop-opacity=".9"/><stop offset="1" stop-color="#e4b443" stop-opacity="0"/></linearGradient>
+      <linearGradient id="so" x1="0" x2="1"><stop offset="0" stop-color="#f37a2b" stop-opacity="0"/><stop offset=".7" stop-color="#f37a2b" stop-opacity=".8"/><stop offset="1" stop-color="#f37a2b" stop-opacity="0"/></linearGradient>
+    </defs>
+    <path d="M-40 470 L1480 120" stroke="url(#sg)" stroke-width="2.5" fill="none"/>
+    <path d="M-40 520 L1480 210" stroke="url(#sg)" stroke-width="1" fill="none" opacity=".6"/>
+    <path d="M300 600 L1480 300" stroke="url(#so)" stroke-width="3" fill="none" opacity=".7"/>
+    <path d="M-40 90 L900 -40" stroke="url(#sg)" stroke-width="1" fill="none" opacity=".5"/>
+  </svg>
+  <div class="wrap hero-inner">
+    <div>
+      <div class="brand">
+        <img class="crest" src="assets/logo.jpg" alt="MaveN 클럽 마크">
+        <div class="eyebrow">FreeStyle Reboot<span>Club League · 3 on 3</span></div>
+      </div>
+      <h1>
+        <span class="club gold-text">Mave<span class="n">N</span></span>
+        <span class="ribbon"><b>2회 클럽 내전</b><small>SEASON 2</small></span>
+      </h1>
+      <div class="facts">
+        <span class="fact"><b>8</b>팀</span>
+        <span class="fact"><b>24</b>명 출전</span>
+        <span class="fact"><b>3</b>대3 · 3인 1팀</span>
+        <span class="fact"><b>7</b>경기 토너먼트</span>
+      </div>
+    </div>
+    <div class="poster">
+      <div class="frame"><img src="assets/keyart.jpg" alt="프리스타일 리부트 공식 키아트: 길거리 농구 캐릭터 네 명"></div>
+      <div class="stamp"><div><b>3on3</b><small>STREET</small></div></div>
+      <div class="vert">PLAY TOGETHER · GROW TOGETHER</div>
+      <div class="credit">키아트 ©JOYCITY</div>
+    </div>
+  </div>
+</header>
+
+<div class="ticker" aria-hidden="true"><div class="track" id="ticker"></div></div>
+
+<main class="wrap">
   <div class="status">
     <div class="progress" id="progress"></div>
     <span class="mode" id="mode"><i class="dot"></i><span id="modeText">불러오는 중…</span></span>
   </div>
-  <p class="help" id="help">경기 결과는 관리자가 체크합니다. 이긴 팀은 금색 선을 따라 다음 경기로 올라갑니다.</p>
+  <p class="help" id="help">경기 결과는 진행 담당이 체크합니다. 이긴 팀은 금색 선을 따라 다음 경기로 올라갑니다.</p>
 
-  <div class="scroller">
-    <div class="bracket" id="bracket">
-      <svg class="wires" id="wires" aria-hidden="true"></svg>
-      <div class="rnd-head" style="grid-column:1"><b>8강</b>Quarter</div>
-      <div class="rnd-head" style="grid-column:2"><b>4강</b>Semi</div>
-      <div class="rnd-head" style="grid-column:3"><b>결승</b>Final</div>
-      <div class="rnd-head" style="grid-column:4"><b>우승</b>Champion</div>
-      <section class="champ" id="champ" aria-live="polite">
-        <img alt="" src="assets/logo.jpg">
-        <div class="lbl">WINNER</div>
-        <h2 class="gold-text">우승</h2>
-        <div class="team empty" id="champTeam">결승 #07 승자</div>
-        <div class="mem" id="champMem"></div>
-      </section>
+  <div class="arena">
+    <svg class="court" viewBox="0 0 1000 500" preserveAspectRatio="none" aria-hidden="true">
+      <g fill="none" stroke="#e4b443" stroke-opacity=".08" stroke-width="2" vector-effect="non-scaling-stroke">
+        <rect x="10" y="10" width="980" height="480" rx="4"/>
+        <line x1="500" y1="10" x2="500" y2="490"/>
+        <circle cx="500" cy="250" r="60"/>
+        <circle cx="500" cy="250" r="20"/>
+        <rect x="10" y="170" width="180" height="160"/>
+        <rect x="810" y="170" width="180" height="160"/>
+        <path d="M10 40 H70 A230 230 0 0 1 70 460 H10"/>
+        <path d="M990 40 H930 A230 230 0 0 0 930 460 H990"/>
+        <path d="M190 190 A60 60 0 0 1 190 310"/>
+        <path d="M810 190 A60 60 0 0 0 810 310"/>
+      </g>
+    </svg>
+    <div class="scroller">
+      <div class="bracket" id="bracket">
+        <svg class="wires" id="wires" aria-hidden="true"></svg>
+        <div class="rnd-head" style="grid-column:1"><span><b>8강</b><small>Quarter</small></span></div>
+        <div class="rnd-head" style="grid-column:2"><span><b>4강</b><small>Semi</small></span></div>
+        <div class="rnd-head" style="grid-column:3"><span><b>결승</b><small>Final</small></span></div>
+        <div class="rnd-head" style="grid-column:4"><span><b>우승</b><small>Champion</small></span></div>
+        <section class="champ" id="champ" aria-live="polite">
+          <svg class="trophy" viewBox="0 0 150 160" aria-hidden="true">
+            <defs>
+              <linearGradient id="tg" x1="0" x2="1">
+                <stop offset="0" stop-color="#8f6416"/><stop offset=".28" stop-color="#f6d77c"/><stop offset=".5" stop-color="#fff2c4"/>
+                <stop offset=".72" stop-color="#e4b443"/><stop offset="1" stop-color="#8f6416"/>
+              </linearGradient>
+              <linearGradient id="tb" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="#2a2a30"/><stop offset="1" stop-color="#121215"/></linearGradient>
+              <radialGradient id="ball" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="#ffb26b"/><stop offset=".55" stop-color="#f37a2b"/><stop offset="1" stop-color="#a8460f"/></radialGradient>
+            </defs>
+            <path d="M40 46 C14 46 12 80 44 92" fill="none" stroke="url(#tg)" stroke-width="7" stroke-linecap="round"/>
+            <path d="M110 46 C136 46 138 80 106 92" fill="none" stroke="url(#tg)" stroke-width="7" stroke-linecap="round"/>
+            <path d="M36 38 H114 C114 84 98 104 75 108 C52 104 36 84 36 38 Z" fill="url(#tg)"/>
+            <path d="M48 44 C49 74 58 92 70 99" fill="none" stroke="#fff6d6" stroke-opacity=".6" stroke-width="3" stroke-linecap="round"/>
+            <rect x="68" y="106" width="14" height="14" fill="url(#tg)"/>
+            <path d="M52 120 H98 L104 132 H46 Z" fill="url(#tg)"/>
+            <rect x="40" y="132" width="70" height="20" rx="3" fill="url(#tb)" stroke="#e4b443" stroke-opacity=".6"/>
+            <text x="75" y="146" text-anchor="middle" font-family="Oswald, sans-serif" font-weight="700" font-size="10" letter-spacing="2" fill="#e4b443">MAVEN 2</text>
+            <circle cx="75" cy="24" r="18" fill="url(#ball)"/>
+            <g fill="none" stroke="#5a2306" stroke-width="1.6">
+              <path d="M57 24 H93"/><path d="M75 6 V42"/>
+              <path d="M63 11 C70 18 70 30 63 37"/><path d="M87 11 C80 18 80 30 87 37"/>
+            </g>
+            <path d="M24 20 l3 7 7 3 -7 3 -3 7 -3 -7 -7 -3 7 -3z" fill="#fbe39a"/>
+            <path d="M126 58 l2 5 5 2 -5 2 -2 5 -2 -5 -5 -2 5 -2z" fill="#fbe39a"/>
+            <path d="M120 12 l1.5 3.5 3.5 1.5 -3.5 1.5 -1.5 3.5 -1.5 -3.5 -3.5 -1.5 3.5 -1.5z" fill="#fff"/>
+          </svg>
+          <div class="lbl">WINNER</div>
+          <h2 class="gold-text">우승</h2>
+          <div class="team empty" id="champTeam">결승 #07 승자</div>
+          <div class="mem" id="champMem"></div>
+        </section>
+      </div>
     </div>
   </div>
 
   <section class="roster">
-    <h3>출전 팀</h3>
+    <h3 class="sec-title">출전 팀</h3>
     <div class="teams" id="teams"></div>
   </section>
 
   <div class="admin-tools">
     <span class="help" id="updated" style="margin:0"></span>
-    <button class="btn ghost" id="openLogin" type="button">관리자</button>
+    <button class="btn ghost" id="openLogin" type="button">진행 담당</button>
     <form id="login" class="login" hidden>
-      <input id="pin" type="password" autocomplete="current-password" placeholder="관리자 PIN" aria-label="관리자 PIN">
-      <button class="btn" type="submit">로그인</button>
+      <input id="pin" type="password" autocomplete="current-password" placeholder="체크 키" aria-label="체크 키">
+      <button class="btn" type="submit">확인</button>
       <span class="help" id="loginMsg" style="margin:0" aria-live="polite"></span>
     </form>
-    <button class="btn" id="logout" type="button" hidden>관리자 나가기</button>
+    <button class="btn" id="logout" type="button" hidden>체크 모드 끄기</button>
     <button class="btn" id="resetAll" type="button" hidden>전체 결과 초기화</button>
   </div>
-
 
   <footer>
     <span>MaveN 2회 클럽 내전 · 프리스타일 리부트 3대3</span>
     <span>키아트 ©JOYCITY · 클럽 비상업 내부 행사용</span>
   </footer>
-</div>
+</main>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
 <script>
@@ -486,7 +565,7 @@ async function load() {
   const next = {};
   data.forEach(r => { next[r.match_id] = r; });
   results = next;
-  setMode(isAdmin ? "admin" : "live", isAdmin ? "관리자 · 결과 입력 가능" : "실시간 갱신 중");
+  setMode(isAdmin ? "admin" : "live", isAdmin ? "체크 모드 · 결과 입력 가능" : "실시간 갱신 중");
   render();
   ready = true;
 }
@@ -508,9 +587,9 @@ function applyAdmin() {
   logoutBtn.hidden = !isAdmin;
   resetBtn.hidden = !isAdmin;
   document.getElementById("help").innerHTML = isAdmin
-    ? `<b>관리자 모드</b> · 이긴 팀의 <b>승</b> 칸을 체크하면 다음 경기로 올라갑니다. 다시 누르면 취소됩니다. 점수는 선택입니다.`
-    : `경기 결과는 관리자가 체크합니다. 이긴 팀은 금색 선을 따라 다음 경기로 올라가고, 이 화면은 실시간으로 바뀝니다.`;
-  setMode(isAdmin ? "admin" : "live", isAdmin ? "관리자 · 결과 입력 가능" : "실시간 갱신 중");
+    ? `<b>체크 모드</b> · 이긴 팀의 <b>승</b> 칸을 누르면 다음 경기로 올라갑니다. 다시 누르면 취소됩니다. 점수는 선택입니다.`
+    : `경기 결과는 진행 담당이 체크합니다. 이긴 팀은 금색 선을 따라 다음 경기로 올라가고, 이 화면은 실시간으로 바뀝니다.`;
+  setMode(isAdmin ? "admin" : "live", isAdmin ? "체크 모드 · 결과 입력 가능" : "실시간 갱신 중");
   render();
 }
 async function tryPin(p) {
@@ -656,9 +735,21 @@ async function boot() {
   render();
   if (!window.supabase) { setMode("warn", "결과 서버에 연결하지 못했습니다"); return; }
   sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, { auth: { persistSession: false } });
+  // A check link carries the key in the hash (#k=…); hashes never reach the server. Keep it for this tab, then hide it.
   let saved = null;
-  try { saved = sessionStorage.getItem(PIN_KEY); } catch (e) {}
-  if (saved && await tryPin(saved)) { pin = saved; isAdmin = true; }
+  const fromHash = location.hash.match(/[#&]k=([^&]+)/);
+  if (fromHash) {
+    saved = decodeURIComponent(fromHash[1]);
+    history.replaceState(null, "", location.pathname + location.search);
+  } else {
+    try { saved = sessionStorage.getItem(PIN_KEY); } catch (e) {}
+  }
+  if (saved && await tryPin(saved)) {
+    pin = saved; isAdmin = true;
+    try { sessionStorage.setItem(PIN_KEY, saved); } catch (e) {}
+  } else if (fromHash) {
+    document.getElementById("loginMsg").textContent = "체크용 링크의 키가 맞지 않습니다";
+  }
   applyAdmin();
   await load();
   sb.channel("maven-bracket")
@@ -668,10 +759,17 @@ async function boot() {
   setInterval(() => { if (!isAdmin && document.visibilityState === "visible") load(); }, 20000);
 }
 
+// Team ticker under the poster; two copies so the loop is seamless.
+const tickerEl = document.getElementById("ticker");
+if (tickerEl) {
+  const seg = `<div class="seg">${TEAMS.map((m, i) => `<span><b>TEAM ${pad(i)}</b>${m.join(" · ")}</span><i>★</i>`).join("")}</div>`;
+  tickerEl.innerHTML = seg + seg;
+}
+
 boot();
 window.addEventListener("resize", wires);
 document.fonts && document.fonts.ready.then(wires);
-</script>
 
+</script>
 </body>
 </html>
