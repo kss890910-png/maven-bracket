@@ -45,13 +45,13 @@ body { background: var(--bg); color: var(--silver); font-family: var(--f-body); 
 .banner { position: relative; overflow: hidden; border-bottom: 1px solid var(--line); }
 .banner .art {
   position: absolute; inset: 0;
-  background: url("assets/keyart.jpg") center 30% / cover no-repeat;
+  /* whole key art, height-fitted on the right so no character is cropped */
+  background: url("assets/keyart.jpg") right center / auto 100% no-repeat;
 }
 .banner .art::after {
   content: ""; position: absolute; inset: 0;
   background:
-    linear-gradient(90deg, rgba(10,10,11,.96) 0%, rgba(10,10,11,.82) 38%, rgba(10,10,11,.15) 75%, rgba(10,10,11,.35) 100%),
-    linear-gradient(180deg, transparent 55%, var(--bg) 100%);
+    linear-gradient(90deg, var(--bg) 0%, var(--bg) max(0px, calc(100% - 900px)), rgba(10,10,11,.55) calc(100% - 620px), rgba(10,10,11,0) calc(100% - 420px));
 }
 .hero {
   position: relative;
@@ -59,8 +59,8 @@ body { background: var(--bg); color: var(--silver); font-family: var(--f-body); 
   grid-template-columns: auto minmax(0, 1fr);
   gap: 28px;
   align-items: center;
-  padding-block: 48px 64px;
-  min-height: 380px;
+  padding-block: 48px;
+  min-height: 460px;
 }
 .crest {
   width: clamp(150px, 18vw, 210px); aspect-ratio: 1; max-width: 100%;
@@ -128,9 +128,9 @@ h1 .ev b { font-weight: 400; color: var(--gold); }
 .scroller { overflow-x: auto; padding-block: 14px 36px; }
 .bracket {
   position: relative; display: grid;
-  grid-template-columns: repeat(3, 272px) 300px;
-  column-gap: 64px; row-gap: 22px;
-  min-width: calc(272px * 3 + 300px + 64px * 3);
+  grid-template-columns: repeat(3, minmax(228px, 1fr)) minmax(232px, 270px);
+  column-gap: 44px; row-gap: 22px;
+  min-width: calc(228px * 3 + 232px + 44px * 3);
 }
 .rnd-head {
   grid-row: 1; margin-bottom: -10px;
@@ -273,10 +273,10 @@ footer {
 @media (max-width: 760px) {
   .hero { grid-template-columns: minmax(0, 1fr); padding-block: 28px 40px; gap: 18px; min-height: 0; }
   .crest { width: 120px; }
-  .banner .art { background-position: 70% 20%; }
-  .banner .art::after { background: linear-gradient(180deg, rgba(10,10,11,.55) 0%, rgba(10,10,11,.9) 55%, var(--bg) 100%); }
+  .banner .art { background-size: cover; background-position: center top; }
+  .banner .art::after { background: linear-gradient(180deg, rgba(10,10,11,.5) 0%, rgba(10,10,11,.88) 55%, var(--bg) 100%); }
   .status { grid-template-columns: minmax(0, 1fr); }
-  .bracket { grid-template-columns: repeat(3, 250px) 260px; column-gap: 44px; min-width: calc(250px * 3 + 260px + 44px * 3); }
+  .bracket { grid-template-columns: repeat(3, 236px) 240px; column-gap: 36px; min-width: calc(236px * 3 + 240px + 36px * 3); }
 }
 .admin-tools { flex-wrap: wrap; }
 .login { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
@@ -572,7 +572,7 @@ function render() {
       slot.querySelector(".seed").textContent = team != null ? pad(team) : "–";
       slot.querySelector(".who").innerHTML = team != null
         ? `<div class="tn"><span>TEAM ${pad(team)}</span>${ws === s ? `<span class="badge">WIN</span>` : ""}</div><div class="mem">${memHTML(team)}</div>`
-        : `<em class="wait">${mno(String(m.sides[s]).slice(1))} 승자가 올라옵니다</em>`;
+        : `<em class="wait">${mno(String(m.sides[s]).slice(1))} 승자</em>`;
       const inp = slot.querySelector(".score");
       const v = s ? r.b : r.a;
       inp.readOnly = !isAdmin || !both;
