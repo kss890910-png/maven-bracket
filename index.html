@@ -557,9 +557,9 @@ function clearDownstream(id) {
 async function load() {
   const { data, error } = await sb.from("maven_bracket_results").select("match_id,w,a,b,updated_at");
   if (error) {
-    setMode("warn", error.code === "42P01" || /does not exist|schema cache/.test(error.message || "")
-      ? "결과 저장소가 아직 준비되지 않았습니다 (Supabase 설정 필요)"
-      : "결과를 불러오지 못했습니다");
+    setMode("warn", /fetch|network/i.test(error.message || "")
+      ? "결과 서버(Supabase)에 연결되지 않습니다"
+      : "결과 저장소가 아직 준비되지 않았습니다 (SQL 실행 필요)");
     return;
   }
   const next = {};
@@ -592,8 +592,12 @@ function applyAdmin() {
   setMode(isAdmin ? "admin" : "live", isAdmin ? "체크 모드 · 결과 입력 가능" : "실시간 갱신 중");
   render();
 }
+let pinError = "";
 async function tryPin(p) {
   const { data, error } = await sb.rpc("maven_check_pin", { p_pin: p });
+  pinError = error
+    ? (/fetch|network/i.test(error.message || "") ? "결과 서버(Supabase)에 연결되지 않습니다" : "결과 서버 설정(SQL)이 아직 안 됐습니다")
+    : data === true ? "" : "체크 키가 맞지 않습니다";
   return !error && data === true;
 }
 function logout() {
@@ -613,7 +617,7 @@ loginForm.addEventListener("submit", async e => {
     try { sessionStorage.setItem(PIN_KEY, p); } catch (e) {}
     applyAdmin();
   } else {
-    msg.textContent = "PIN이 맞지 않습니다";
+    msg.textContent = pinError;
   }
 });
 logoutBtn.addEventListener("click", logout);
@@ -748,7 +752,9 @@ async function boot() {
     pin = saved; isAdmin = true;
     try { sessionStorage.setItem(PIN_KEY, saved); } catch (e) {}
   } else if (fromHash) {
-    document.getElementById("loginMsg").textContent = "체크용 링크의 키가 맞지 않습니다";
+    document.getElementById("loginMsg").textContent = pinError;
+    document.getElementById("login").hidden = false;
+    document.getElementById("openLogin").hidden = true;
   }
   applyAdmin();
   await load();
