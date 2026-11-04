@@ -1,4 +1,4 @@
--- MaveN 2회 클럽 내전 대진표 · Supabase 설정 (한 번만 실행)
+-- MaveN 클럽 내전 대진표 · Supabase 설정 (한 번만 실행)
 -- 실행 위치: Supabase 대시보드 → SQL Editor → 새 쿼리 → 전체 붙여넣기 → Run
 -- 실행 전에 맨 아래 '여기에_관리자_PIN' 을 원하는 비밀번호로 바꾸세요 (6자 이상 권장).
 -- 전술보드 테이블은 건드리지 않습니다. 이 파일은 maven_bracket_* 이름만 만듭니다.
@@ -83,10 +83,47 @@ grant execute on function public.maven_check_pin(text) to anon, authenticated;
 grant execute on function public.maven_set_result(text, smallint, smallint, integer, integer) to anon, authenticated;
 grant execute on function public.maven_clear(text, smallint[]) to anon, authenticated;
 
+-- 팀 명단 (비어 있으면 페이지에 적힌 기본 명단을 씀)
+create table if not exists public.maven_bracket_teams (
+  team_no    smallint primary key check (team_no between 1 and 8),
+  members    text[] not null check (array_length(members, 1) between 1 and 4),
+  updated_at timestamptz not null default now()
+);
+alter table public.maven_bracket_teams enable row level security;
+drop policy if exists "maven teams are public" on public.maven_bracket_teams;
+create policy "maven teams are public" on public.maven_bracket_teams
+  for select to anon, authenticated using (true);
+
+create or replace function public.maven_set_team(p_pin text, p_team smallint, p_members text[])
+returns void
+language plpgsql
+security definer
+set search_path = public, extensions
+as $$
+begin
+  if not public.maven_check_pin(p_pin) then
+    raise exception 'invalid pin' using errcode = '28P01';
+  end if;
+  if exists (select 1 from unnest(p_members) m where length(m) > 30) then
+    raise exception 'name too long';
+  end if;
+  insert into public.maven_bracket_teams (team_no, members, updated_at)
+  values (p_team, p_members, now())
+  on conflict (team_no) do update set members = excluded.members, updated_at = now();
+end;
+$$;
+revoke all on function public.maven_set_team(text, smallint, text[]) from public;
+grant execute on function public.maven_set_team(text, smallint, text[]) to anon, authenticated;
+
 -- 실시간 갱신
 do $$
 begin
   alter publication supabase_realtime add table public.maven_bracket_results;
+exception when duplicate_object then null;
+end $$;
+do $$
+begin
+  alter publication supabase_realtime add table public.maven_bracket_teams;
 exception when duplicate_object then null;
 end $$;
 

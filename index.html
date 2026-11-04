@@ -3,9 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>MaveN 2회 클럽 내전</title>
-<meta name="description" content="프리스타일 리부트 3대3 · MaveN 2회 클럽 내전 8팀 토너먼트 대진표">
-<meta property="og:title" content="MaveN 2회 클럽 내전">
+<title>MaveN 클럽 내전</title>
+<meta name="description" content="프리스타일 리부트 3대3 · MaveN 클럽 내전 8팀 토너먼트 대진표">
+<meta property="og:title" content="MaveN 클럽 내전">
 <meta property="og:description" content="프리스타일 리부트 3대3 · 8팀 토너먼트 대진표">
 <meta property="og:image" content="https://kss890910-png.github.io/maven-bracket/assets/logo.jpg">
 <link rel="icon" href="assets/logo.jpg">
@@ -290,6 +290,14 @@ svg.wires path.fresh { stroke-dasharray: 400; stroke-dashoffset: 400; animation:
 .tcard .st { font-size: 12px; color: var(--muted); margin-top: 4px; }
 .tcard .st.alive { color: var(--silver); }
 .tcard.king .st { color: var(--gold); }
+.tbtn { position: absolute; top: 8px; right: 8px; font: 600 11px var(--f-body); color: var(--muted); background: transparent; border: 1px solid var(--line); border-radius: 6px; padding: 3px 8px; cursor: pointer; }
+.tbtn:hover, .tbtn:focus-visible { color: var(--ball); border-color: var(--ball); outline: none; }
+.tcard:has(.tbtn) { padding-right: 56px; }
+.tcard.editing { border-color: var(--ball); }
+.tedit { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.tin { min-width: 0; font: 500 13px var(--f-body); color: var(--silver); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 7px 8px; }
+.tin:focus { outline: none; border-color: var(--gold-hi); }
+.tact { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 8px; }
 
 .admin-tools { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: flex-end; margin-top: 18px; }
 .login { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
@@ -332,7 +340,7 @@ footer { margin-top: 36px; padding-block: 18px 32px; border-top: 1px solid var(-
       </div>
       <h1>
         <span class="club gold-text">Mave<span class="n">N</span></span>
-        <span class="ribbon"><b>2회 클럽 내전</b><small>SEASON 2</small></span>
+        <span class="ribbon"><b>클럽 내전</b><small>3ON3 TOURNAMENT</small></span>
       </h1>
       <div class="facts">
         <span class="fact"><b>8</b>팀</span>
@@ -435,7 +443,7 @@ footer { margin-top: 36px; padding-block: 18px 32px; border-top: 1px solid var(-
   </div>
 
   <footer>
-    <span>MaveN 2회 클럽 내전 · 프리스타일 리부트 3대3</span>
+    <span>MaveN 클럽 내전 · 프리스타일 리부트 3대3</span>
     <span>키아트 ©JOYCITY · 클럽 비상업 내부 행사용</span>
   </footer>
 </main>
@@ -445,7 +453,8 @@ footer { margin-top: 36px; padding-block: 18px 32px; border-top: 1px solid var(-
 const SUPABASE_URL = "https://ndirhsutvpgharwpyajg.supabase.co";
 const SUPABASE_KEY = "sb_publishable_2UHgDb149UDfwHcvmfBCxQ_H3Q18_ud";   // publishable (public) key; writes go through PIN-checked functions only
 
-const TEAMS = [
+// Default roster; rows saved in maven_bracket_teams replace these team by team.
+const DEFAULT_TEAMS = [
   ["토닥토닥", "옷옷", "보조종결자"],
   ["똥보", "최성민", "킹지웅"],
   ["트렌스", "PotentiaL", "준꿀이"],
@@ -455,6 +464,9 @@ const TEAMS = [
   ["궤센스", "장주역", "홍낭당"],
   ["사자", "이별", "춥슈가"],
 ];
+let TEAMS = DEFAULT_TEAMS.map(t => t.slice());
+let editing = null;          // index of the team being edited in the roster
+let draft = [];              // its unsaved member names
 // Each side is a team index or the winner of an earlier match ("w5").
 const MATCHES = {
   1: { round: "8강", sides: [0, 1] },
@@ -525,7 +537,8 @@ function winnerSide(id) {
   return w === 0 || w === 1 ? w : null;
 }
 function winnerOf(id) { const s = winnerSide(id); return s == null ? null : sidesOf(id)[s]; }
-const memHTML = t => TEAMS[t].map(n => `<span>${n}</span>`).join("");
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+const memHTML = t => TEAMS[t].map(n => `<span>${esc(n)}</span>`).join("");
 
 /* ---------- storage ---------- */
 function enqueue(job) {
@@ -565,9 +578,18 @@ async function load() {
   const next = {};
   data.forEach(r => { next[r.match_id] = r; });
   results = next;
+  await loadTeams();
   setMode(isAdmin ? "admin" : "live", isAdmin ? "체크 모드 · 결과 입력 가능" : "실시간 갱신 중");
   render();
   ready = true;
+}
+async function loadTeams() {
+  const { data, error } = await sb.from("maven_bracket_teams").select("team_no,members");
+  if (error) return;   // no table yet: keep the default roster
+  const next = DEFAULT_TEAMS.map(t => t.slice());
+  data.forEach(r => { if (r.team_no >= 1 && r.team_no <= 8 && Array.isArray(r.members)) next[r.team_no - 1] = r.members; });
+  TEAMS = next;
+  ticker();
 }
 function setMode(kind, text) {
   document.getElementById("mode").className = "mode " + kind;
@@ -587,7 +609,7 @@ function applyAdmin() {
   logoutBtn.hidden = !isAdmin;
   resetBtn.hidden = !isAdmin;
   document.getElementById("help").innerHTML = isAdmin
-    ? `<b>체크 모드</b> · 이긴 팀의 <b>승</b> 칸을 누르면 다음 경기로 올라갑니다. 다시 누르면 취소됩니다. 점수는 선택입니다.`
+    ? `<b>체크 모드</b> · 이긴 팀의 <b>승</b> 칸을 누르면 다음 경기로 올라갑니다. 다시 누르면 취소됩니다. 점수는 선택입니다. 팀 명단은 아래 카드의 <b>수정</b>으로 바꿀 수 있습니다.`
     : `경기 결과는 진행 담당이 체크합니다. 이긴 팀은 금색 선을 따라 다음 경기로 올라가고, 이 화면은 실시간으로 바뀝니다.`;
   setMode(isAdmin ? "admin" : "live", isAdmin ? "체크 모드 · 결과 입력 가능" : "실시간 갱신 중");
   render();
@@ -601,7 +623,7 @@ async function tryPin(p) {
   return !error && data === true;
 }
 function logout() {
-  isAdmin = false; pin = null;
+  isAdmin = false; pin = null; editing = null;
   try { sessionStorage.removeItem(PIN_KEY); } catch (e) {}
   applyAdmin();
 }
@@ -707,9 +729,44 @@ function roster() {
   document.getElementById("teams").innerHTML = TEAMS.map((_, i) => {
     const cls = i === champ ? "king" : lost[i] ? "out" : "";
     const st = i === champ ? "우승" : lost[i] ? `${lost[i]} 탈락` : `${reached[i]} 진출`;
-    return `<div class="tcard ${cls}"><div class="n">${pad(i)}</div><div><div class="mem">${memHTML(i)}</div><div class="st ${cls ? "" : "alive"}">${st}</div></div></div>`;
+    if (isAdmin && editing === i) {
+      const inputs = [0, 1, 2, 3].map(k =>
+        `<input class="tin" id="t${i}-${k}" data-k="${k}" maxlength="30" value="${esc(draft[k] || "")}" placeholder="${k < 3 ? "멤버 " + (k + 1) : "후보 (선택)"}" aria-label="TEAM ${pad(i)} 멤버 ${k + 1}">`).join("");
+      return `<div class="tcard editing"><div class="n">${pad(i)}</div><div><div class="tedit">${inputs}</div>` +
+        `<div class="tact"><button class="btn" type="button" data-act="save" data-i="${i}">저장</button>` +
+        `<button class="btn ghost" type="button" data-act="cancel">취소</button><span class="help" id="teamMsg" style="margin:0"></span></div></div></div>`;
+    }
+    const edit = isAdmin ? `<button class="tbtn" type="button" data-act="edit" data-i="${i}" aria-label="TEAM ${pad(i)} 명단 수정">수정</button>` : "";
+    return `<div class="tcard ${cls}"><div class="n">${pad(i)}</div><div><div class="mem">${memHTML(i)}</div><div class="st ${cls ? "" : "alive"}">${st}</div></div>${edit}</div>`;
   }).join("");
 }
+
+// Roster editing (check mode only).
+const teamsEl = document.getElementById("teams");
+teamsEl.addEventListener("input", e => {
+  if (e.target.classList.contains("tin")) draft[+e.target.dataset.k] = e.target.value;
+});
+teamsEl.addEventListener("click", async e => {
+  const btn = e.target.closest("button[data-act]");
+  if (!btn || !isAdmin) return;
+  const act = btn.dataset.act;
+  if (act === "edit") { editing = +btn.dataset.i; draft = TEAMS[editing].slice(); render(); document.getElementById(`t${editing}-0`)?.focus(); return; }
+  if (act === "cancel") { editing = null; render(); return; }
+  if (act === "save") {
+    const i = +btn.dataset.i;
+    const members = draft.map(s => (s || "").trim()).filter(Boolean);
+    const msg = document.getElementById("teamMsg");
+    if (!members.length) { msg.textContent = "멤버를 한 명 이상 적어 주세요"; return; }
+    btn.disabled = true; msg.textContent = "저장 중…";
+    const { error } = await sb.rpc("maven_set_team", { p_pin: pin, p_team: i + 1, p_members: members });
+    if (error) {
+      btn.disabled = false;
+      msg.textContent = error.code === "28P01" ? "체크 키가 맞지 않습니다" : /fetch|network/i.test(error.message || "") ? "서버에 연결되지 않습니다" : "저장하지 못했습니다 (SQL 최신본 실행 필요)";
+      return;
+    }
+    TEAMS[i] = members; editing = null; ticker(); render();
+  }
+});
 
 function wires() {
   const svg = document.getElementById("wires");
@@ -760,18 +817,21 @@ async function boot() {
   await load();
   sb.channel("maven-bracket")
     .on("postgres_changes", { event: "*", schema: "public", table: "maven_bracket_results" }, () => { if (!isAdmin) load(); })
+    .on("postgres_changes", { event: "*", schema: "public", table: "maven_bracket_teams" }, () => { if (editing == null) loadTeams().then(render); })
     .subscribe();
   // Safety net if realtime is blocked on someone's network.
   setInterval(() => { if (!isAdmin && document.visibilityState === "visible") load(); }, 20000);
 }
 
 // Team ticker under the poster; two copies so the loop is seamless.
-const tickerEl = document.getElementById("ticker");
-if (tickerEl) {
-  const seg = `<div class="seg">${TEAMS.map((m, i) => `<span><b>TEAM ${pad(i)}</b>${m.join(" · ")}</span><i>★</i>`).join("")}</div>`;
-  tickerEl.innerHTML = seg + seg;
+function ticker() {
+  const el = document.getElementById("ticker");
+  if (!el) return;
+  const seg = `<div class="seg">${TEAMS.map((m, i) => `<span><b>TEAM ${pad(i)}</b>${m.map(esc).join(" · ")}</span><i>★</i>`).join("")}</div>`;
+  el.innerHTML = seg + seg;
 }
 
+ticker();
 boot();
 window.addEventListener("resize", wires);
 document.fonts && document.fonts.ready.then(wires);
