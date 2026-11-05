@@ -309,6 +309,19 @@ svg.wires path.fresh { stroke-dasharray: 400; stroke-dashoffset: 400; animation:
 .btn.ghost { background: transparent; color: var(--muted); }
 .btn.armed { border-color: var(--ball); color: var(--ball); }
 
+/* ---------- team finder ---------- */
+.finder { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; margin-top: 14px; }
+.finder label { font-family: var(--f-display); font-size: 16px; color: var(--ball); }
+.finder input { flex: 0 1 280px; min-width: 0; min-height: 40px; font: 500 15px var(--f-body); color: var(--silver); background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 7px 12px; }
+.finder input:focus-visible { outline: 2px solid var(--gold-hi); outline-offset: 1px; }
+.finder .help { margin: 0; flex-basis: 100%; }
+.finder .help b { color: var(--ball); }
+.slot.mine { box-shadow: inset 4px 0 0 var(--ball); }
+.slot.mine .seed { color: var(--ball); }
+.match.mine { border-color: var(--ball); }
+.tcard.mine { border-color: var(--ball); box-shadow: inset 4px 0 0 var(--ball); }
+.tcard[data-team] { cursor: pointer; }
+
 footer { margin-top: 36px; padding-block: 18px 32px; border-top: 1px solid var(--line); color: var(--muted); font-size: 12px; display: flex; flex-wrap: wrap; gap: 8px 24px; justify-content: space-between; }
 
 @media (max-width: 860px) {
@@ -365,7 +378,8 @@ footer { margin-top: 36px; padding-block: 18px 32px; border-top: 1px solid var(-
   .admin-tools .btn { min-height: 44px; }
   .login input { flex: 1; min-width: 0; }
   /* 16px+ inputs keep iOS Safari from zooming in on focus */
-  .login input, .tin { font-size: 16px; min-height: 44px; }
+  .login input, .tin, .finder input { font-size: 16px; min-height: 44px; }
+  .finder input { flex: 1 1 0; }
 }
 </style>
 </head>
@@ -416,6 +430,14 @@ footer { margin-top: 36px; padding-block: 18px 32px; border-top: 1px solid var(-
     <span class="mode" id="mode"><i class="dot"></i><span id="modeText">불러오는 중…</span></span>
   </div>
   <p class="help" id="help">경기 결과는 진행 담당이 체크합니다. 이긴 팀은 금색 선을 따라 다음 경기로 올라갑니다.</p>
+
+  <div class="finder" role="search">
+    <label for="find">내 팀 찾기</label>
+    <input id="find" type="search" list="names" placeholder="닉네임 입력 또는 아래 팀 카드 누르기" autocomplete="off" enterkeyhint="search">
+    <datalist id="names"></datalist>
+    <button class="btn ghost" id="findClear" type="button" hidden>지우기</button>
+    <span class="help" id="findMsg" aria-live="polite"></span>
+  </div>
 
   <div class="arena">
     <svg class="court" viewBox="0 0 1000 500" preserveAspectRatio="none" aria-hidden="true">
@@ -531,6 +553,8 @@ const MATCHES = {
 const NEXT = { 1: [5, 0], 2: [5, 1], 3: [6, 0], 4: [6, 1], 5: [7, 0], 6: [7, 1] };
 const ROUNDS = [["8강", [1, 2, 3, 4]], ["4강", [5, 6]], ["결승", [7]]];
 const PIN_KEY = "maven-bracket-pin";
+const MINE_KEY = "maven-bracket-mine";   // this viewer's own team pick (local convenience only)
+let mine = null;                          // team index highlighted by "내 팀 찾기"
 const pad = n => String(n + 1).padStart(2, "0");
 const mno = id => "#" + String(id).padStart(2, "0");
 
@@ -720,6 +744,7 @@ function render() {
     const ws = winnerSide(id);
     const r = results[id] || {};
     card.classList.toggle("done", ws != null);
+    card.classList.toggle("mine", mine != null && t.includes(mine));
     card.querySelector(".st").textContent =
       ws != null ? `TEAM ${pad(t[ws])} 진출 ▶` : both ? `${m.round} · 경기 전` : `${m.round} · 상대 기다리는 중`;
 
@@ -744,6 +769,7 @@ function render() {
       chk.hidden = !isAdmin;
       chk.disabled = !both;
       chk.setAttribute("aria-pressed", String(ws === s));
+      slot.classList.toggle("mine", mine != null && team === mine);
       slot.classList.toggle("win", ws === s);
       slot.classList.toggle("lose", ws != null && ws !== s);
     });
@@ -758,6 +784,7 @@ function render() {
 
   progress();
   roster();
+  findStatus();
   wires();
   const times = Object.values(results).map(r => r.updated_at).filter(Boolean).sort();
   document.getElementById("updated").textContent = times.length
@@ -793,7 +820,7 @@ function roster() {
         `<button class="btn ghost" type="button" data-act="cancel">취소</button><span class="help" id="teamMsg" style="margin:0"></span></div></div></div>`;
     }
     const edit = isAdmin ? `<button class="tbtn" type="button" data-act="edit" data-i="${i}" aria-label="TEAM ${pad(i)} 명단 수정">수정</button>` : "";
-    return `<div class="tcard ${cls}"><div class="n">${pad(i)}</div><div><div class="mem">${memHTML(i)}</div><div class="st ${cls ? "" : "alive"}">${st}</div></div>${edit}</div>`;
+    return `<div class="tcard ${cls} ${i === mine ? "mine" : ""}" data-team="${i}" title="이 팀 경기 표시"><div class="n">${pad(i)}</div><div><div class="mem">${memHTML(i)}</div><div class="st ${cls ? "" : "alive"}">${st}</div></div>${edit}</div>`;
   }).join("");
 }
 
@@ -804,7 +831,12 @@ teamsEl.addEventListener("input", e => {
 });
 teamsEl.addEventListener("click", async e => {
   const btn = e.target.closest("button[data-act]");
-  if (!btn || !isAdmin) return;
+  if (!btn) {
+    const card = e.target.closest(".tcard[data-team]");
+    if (card) { findInput.value = ""; pickTeam(+card.dataset.team === mine ? null : +card.dataset.team, true); }
+    return;
+  }
+  if (!isAdmin) return;
   const act = btn.dataset.act;
   if (act === "edit") { editing = +btn.dataset.i; draft = TEAMS[editing].slice(); render(); document.getElementById(`t${editing}-0`)?.focus(); return; }
   if (act === "cancel") { editing = null; render(); return; }
@@ -823,6 +855,65 @@ teamsEl.addEventListener("click", async e => {
     TEAMS[i] = members; editing = null; ticker(); render();
   }
 });
+
+/* ---------- 내 팀 찾기 ---------- */
+const findInput = document.getElementById("find");
+const findClear = document.getElementById("findClear");
+function teamByName(q) {
+  q = q.trim().toLowerCase();
+  if (!q) return null;
+  const hit = f => TEAMS.findIndex(m => m.some(n => f(n.toLowerCase())));
+  let i = hit(n => n === q);
+  if (i < 0) {   // partial match only when it points at a single team
+    const teams = new Set(TEAMS.flatMap((m, k) => m.some(n => n.toLowerCase().includes(q)) ? [k] : []));
+    i = teams.size === 1 ? [...teams][0] : -1;
+  }
+  return i < 0 ? -1 : i;
+}
+// The furthest match the team has reached (that is where it is playing next, or where it went out).
+function latestMatch(team) {
+  let last = null;
+  for (const id of Object.keys(MATCHES)) if (sidesOf(id).includes(team)) last = +id;
+  return last;
+}
+function findStatus() {
+  const msg = document.getElementById("findMsg");
+  findClear.hidden = mine == null && !findInput.value;
+  if (mine == null) {
+    msg.textContent = findInput.value.trim() && teamByName(findInput.value) === -1 ? "그 닉네임은 명단에 없습니다 (여러 팀에 걸리면 더 길게 입력해 주세요)" : "";
+    return;
+  }
+  const id = latestMatch(mine);
+  const ws = winnerSide(id), t = sidesOf(id);
+  const opp = t[1 - t.indexOf(mine)];
+  const state = winnerOf(7) === mine ? "우승!"
+    : ws != null ? `${MATCHES[id].round} 탈락`
+    : opp != null ? `다음 경기 ${mno(id)} ${MATCHES[id].round} · 상대 TEAM ${pad(opp)}`
+    : `다음 경기 ${mno(id)} ${MATCHES[id].round} · 상대는 ${mno(String(MATCHES[id].sides[1 - t.indexOf(mine)]).slice(1))} 승자`;
+  msg.innerHTML = `<b>TEAM ${pad(mine)}</b> (${TEAMS[mine].map(esc).join(" · ")}) — ${esc(state)}`;
+}
+function pickTeam(i, scroll, keepText) {
+  mine = i;
+  if (i == null && !keepText) findInput.value = "";
+  try { i == null ? localStorage.removeItem(MINE_KEY) : localStorage.setItem(MINE_KEY, String(i)); } catch (e) {}
+  render();
+  if (scroll && i != null) {
+    const smooth = matchMedia("(prefers-reduced-motion: no-preference)").matches ? "smooth" : "auto";
+    els[latestMatch(i)]?.scrollIntoView({ behavior: smooth, block: "center", inline: "center" });
+  }
+}
+function fillNames() {
+  document.getElementById("names").innerHTML = TEAMS.flat().map(n => `<option value="${esc(n)}"></option>`).join("");
+}
+findInput.addEventListener("input", e => {
+  const i = teamByName(findInput.value);
+  const picked = e.inputType === "insertReplacementText" || !e.inputType;   // chosen from the suggestion list
+  if (i != null && i >= 0) { if (i !== mine || picked) pickTeam(i, picked); }
+  else if (mine != null) pickTeam(null, false, true);
+  findStatus();
+});
+findInput.addEventListener("keydown", e => { if (e.key === "Enter" && mine != null) { e.preventDefault(); pickTeam(mine, true); findInput.blur(); } });
+findClear.addEventListener("click", () => { pickTeam(null, false); findInput.focus(); });
 
 function wires() {
   const svg = document.getElementById("wires");
@@ -849,6 +940,7 @@ function wires() {
 /* ---------- boot ---------- */
 async function boot() {
   build();
+  try { const m = localStorage.getItem(MINE_KEY); if (m != null && +m >= 0 && +m < 8) mine = +m; } catch (e) {}
   render();
   if (!window.supabase) { setMode("warn", "결과 서버에 연결하지 못했습니다"); return; }
   sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, { auth: { persistSession: false } });
@@ -885,6 +977,7 @@ function ticker() {
   if (!el) return;
   const seg = `<div class="seg">${TEAMS.map((m, i) => `<span><b>TEAM ${pad(i)}</b>${m.map(esc).join(" · ")}</span><i>★</i>`).join("")}</div>`;
   el.innerHTML = seg + seg;
+  fillNames();
 }
 
 ticker();
