@@ -504,6 +504,8 @@ footer { margin-top: 36px; padding-block: 18px 32px; border-top: 1px solid var(-
 
   <div class="admin-tools">
     <span class="help" id="updated" style="margin:0"></span>
+    <span class="help" id="shareMsg" style="margin:0" aria-live="polite"></span>
+    <button class="btn" id="share" type="button">결과 공유</button>
     <button class="btn ghost" id="openLogin" type="button">진행 담당</button>
     <form id="login" class="login" hidden>
       <input id="pin" type="password" autocomplete="current-password" placeholder="체크 키" aria-label="체크 키">
@@ -854,6 +856,44 @@ teamsEl.addEventListener("click", async e => {
     }
     TEAMS[i] = members; editing = null; ticker(); render();
   }
+});
+
+/* ---------- 결과 공유 (단톡방에 붙여 넣을 글) ---------- */
+function summaryText() {
+  const name = t => `TEAM ${pad(t)}(${TEAMS[t].join("·")})`;
+  const lines = ["🏀 MaveN 클럽 내전 대진표"];
+  for (const [nm, ids] of ROUNDS) {
+    lines.push("", `[${nm}]`);
+    for (const id of ids) {
+      const t = sidesOf(id), ws = winnerSide(id), r = results[id] || {};
+      const side = s => t[s] != null ? name(t[s]) : `${mno(String(MATCHES[id].sides[s]).slice(1))} 승자`;
+      const score = r.a != null || r.b != null ? ` ${r.a ?? "-"} : ${r.b ?? "-"} ` : " vs ";
+      lines.push(`${mno(id)} ${side(0)}${score}${side(1)}` + (ws != null ? ` → TEAM ${pad(t[ws])} 승` : ""));
+    }
+  }
+  const champ = winnerOf(7);
+  lines.push("", champ != null ? `🏆 우승: ${name(champ)}` : "🏆 우승: 결승 진행 전");
+  lines.push(location.origin + location.pathname);   // never the hash: a check link carries the key there
+  return lines.join("\n");
+}
+const shareBtn = document.getElementById("share");
+shareBtn.addEventListener("click", async () => {
+  const text = summaryText();
+  const msg = document.getElementById("shareMsg");
+  if (navigator.share && matchMedia("(pointer: coarse)").matches) {
+    try { await navigator.share({ title: "MaveN 클럽 내전", text }); return; }
+    catch (e) { if (e && e.name === "AbortError") return; }
+  }
+  let ok = false;
+  try { await navigator.clipboard.writeText(text); ok = true; } catch (e) {
+    const ta = Object.assign(document.createElement("textarea"), { value: text });
+    ta.setAttribute("readonly", ""); ta.style.cssText = "position:fixed;opacity:0";
+    document.body.appendChild(ta); ta.select();
+    try { ok = document.execCommand("copy"); } catch (e2) {}
+    ta.remove();
+  }
+  msg.textContent = ok ? "결과를 복사했습니다. 단톡방에 붙여 넣으세요" : "복사하지 못했습니다";
+  clearTimeout(shareBtn._t); shareBtn._t = setTimeout(() => { msg.textContent = ""; }, 4000);
 });
 
 /* ---------- 내 팀 찾기 ---------- */
