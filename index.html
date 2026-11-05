@@ -206,6 +206,7 @@ svg.wires path.fresh { stroke-dasharray: 400; stroke-dashoffset: 400; animation:
   background: rgba(0,0,0,.25);
 }
 .m-head .no { color: var(--ball); font-weight: 700; font-style: italic; }
+.m-head .nx { display: none; margin-right: auto; color: var(--muted); font-size: 11px; letter-spacing: .04em; }
 .m-head .st { color: var(--muted); font-family: var(--f-body); font-size: 12px; letter-spacing: 0; }
 .match.done .m-head .st { color: var(--gold); }
 .slot { display: grid; grid-template-columns: 40px minmax(0, 1fr) auto; align-items: stretch; min-height: 72px; }
@@ -222,7 +223,7 @@ svg.wires path.fresh { stroke-dasharray: 400; stroke-dashoffset: 400; animation:
 .score::-webkit-outer-spin-button, .score::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
 .score::placeholder { color: var(--line); }
 .score:read-only { cursor: default; }
-.check { all: unset; box-sizing: border-box; width: 46px; display: grid; place-items: center; cursor: pointer; border-left: 1px solid var(--line); font: 700 12px var(--f-body); color: var(--muted); }
+.check { all: unset; touch-action: manipulation; box-sizing: border-box; width: 46px; display: grid; place-items: center; cursor: pointer; border-left: 1px solid var(--line); font: 700 12px var(--f-body); color: var(--muted); }
 .check .box { width: 22px; height: 22px; border-radius: 6px; border: 2px solid var(--line); display: grid; place-items: center; margin-bottom: 2px; }
 .check:hover .box { border-color: var(--gold); }
 .check[aria-pressed="true"] { color: var(--gold); }
@@ -290,9 +291,9 @@ svg.wires path.fresh { stroke-dasharray: 400; stroke-dashoffset: 400; animation:
 .tcard .st { font-size: 12px; color: var(--muted); margin-top: 4px; }
 .tcard .st.alive { color: var(--silver); }
 .tcard.king .st { color: var(--gold); }
-.tbtn { position: absolute; top: 8px; right: 8px; font: 600 11px var(--f-body); color: var(--muted); background: transparent; border: 1px solid var(--line); border-radius: 6px; padding: 3px 8px; cursor: pointer; }
+.tbtn { position: absolute; top: 8px; right: 8px; min-width: 44px; min-height: 36px; font: 600 12px var(--f-body); color: var(--muted); background: transparent; border: 1px solid var(--line); border-radius: 6px; padding: 4px 10px; cursor: pointer; }
 .tbtn:hover, .tbtn:focus-visible { color: var(--ball); border-color: var(--ball); outline: none; }
-.tcard:has(.tbtn) { padding-right: 56px; }
+.tcard:has(.tbtn) { padding-right: 64px; }
 .tcard.editing { border-color: var(--ball); }
 .tedit { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
 .tin { min-width: 0; font: 500 13px var(--f-body); color: var(--silver); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 7px 8px; }
@@ -303,7 +304,7 @@ svg.wires path.fresh { stroke-dasharray: 400; stroke-dashoffset: 400; animation:
 .login { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
 .login input { font: 500 14px var(--f-body); color: var(--silver); background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 7px 10px; width: 160px; }
 .login input:focus-visible { outline: 2px solid var(--gold-hi); outline-offset: 1px; }
-.btn { font: 600 13px var(--f-body); color: var(--silver); background: var(--panel-2); border: 1px solid var(--line); border-radius: 8px; padding: 7px 12px; cursor: pointer; }
+.btn { font: 600 13px var(--f-body); color: var(--silver); background: var(--panel-2); border: 1px solid var(--line); border-radius: 8px; padding: 7px 12px; min-height: 40px; cursor: pointer; touch-action: manipulation; }
 .btn:hover { border-color: var(--ball); }
 .btn.ghost { background: transparent; color: var(--muted); }
 .btn.armed { border-color: var(--ball); color: var(--ball); }
@@ -316,6 +317,55 @@ footer { margin-top: 36px; padding-block: 18px 32px; border-top: 1px solid var(-
   .crest { width: 72px; height: 72px; }
   .status { grid-template-columns: minmax(0, 1fr); }
   .bracket { grid-template-columns: repeat(3, 236px) 244px; column-gap: 36px; min-width: calc(236px * 3 + 244px + 36px * 3); }
+}
+
+/* Phones: no sideways scrolling. Rounds stack top to bottom (8강 → 4강 → 결승 → 우승); each card says where its winner goes. */
+@media (max-width: 640px) {
+  body { font-size: 16px; }
+  .hero-inner { padding-block: 22px 40px; gap: 18px; }
+  .brand { margin-bottom: 12px; }
+  .crest { width: 60px; height: 60px; }
+  .facts { margin-top: 18px; gap: 6px; }
+  .poster .vert { display: none; }
+  .poster .stamp { width: 74px; height: 74px; }
+  .poster .stamp b { font-size: 23px; }
+  .poster .stamp small { font-size: 10px; }
+  .status { padding-block: 18px 0; gap: 10px; }
+  .progress { gap: 6px; }
+  .progress .arrow { display: none; }
+  .step { padding: 6px 10px; gap: 7px; }
+  .step .nm { font-size: 15px; }
+  .mode { white-space: normal; justify-self: start; }
+  .help { font-size: 14px; }
+  .court, svg.wires { display: none; }
+  .scroller { overflow: visible; padding-block: 6px 28px; }
+  .bracket { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+  .rnd-head { margin: 16px 0 0; }
+  .rnd-head.r1 { order: 1; margin-top: 4px; } .m1, .m2, .m3, .m4 { order: 2; }
+  .rnd-head.r2 { order: 3; } .m5, .m6 { order: 4; }
+  .rnd-head.r3 { order: 5; } .m7 { order: 6; }
+  .rnd-head.r4 { order: 7; } .champ { order: 8; }
+  .match { align-self: stretch; }
+  .m-head { padding: 8px 12px; }
+  .m-head .nx { display: inline; }
+  .slot { min-height: 76px; }
+  .who .tn { font-size: 15px; }
+  .mem span { font-size: 13px; padding: 5px 8px; }
+  .score { width: 52px; font-size: 24px; }
+  .check { width: 56px; }
+  .champ { align-self: stretch; }
+  .teams { grid-template-columns: minmax(0, 1fr); gap: 10px; }
+  .tcard { grid-template-columns: 44px minmax(0, 1fr); }
+  .tcard .n { font-size: 28px; }
+  .tbtn { top: 50%; translate: 0 -50%; min-height: 44px; }
+  .tedit { grid-template-columns: minmax(0, 1fr); }
+  .tcard.editing { padding-right: 14px; }
+  .admin-tools { justify-content: stretch; }
+  .admin-tools > .btn, .login { flex: 1 1 100%; }
+  .admin-tools .btn { min-height: 44px; }
+  .login input { flex: 1; min-width: 0; }
+  /* 16px+ inputs keep iOS Safari from zooming in on focus */
+  .login input, .tin { font-size: 16px; min-height: 44px; }
 }
 </style>
 </head>
@@ -385,10 +435,10 @@ footer { margin-top: 36px; padding-block: 18px 32px; border-top: 1px solid var(-
     <div class="scroller">
       <div class="bracket" id="bracket">
         <svg class="wires" id="wires" aria-hidden="true"></svg>
-        <div class="rnd-head" style="grid-column:1"><span><b>8강</b><small>Quarter</small></span></div>
-        <div class="rnd-head" style="grid-column:2"><span><b>4강</b><small>Semi</small></span></div>
-        <div class="rnd-head" style="grid-column:3"><span><b>결승</b><small>Final</small></span></div>
-        <div class="rnd-head" style="grid-column:4"><span><b>우승</b><small>Champion</small></span></div>
+        <div class="rnd-head r1" style="grid-column:1"><span><b>8강</b><small>Quarter</small></span></div>
+        <div class="rnd-head r2" style="grid-column:2"><span><b>4강</b><small>Semi</small></span></div>
+        <div class="rnd-head r3" style="grid-column:3"><span><b>결승</b><small>Final</small></span></div>
+        <div class="rnd-head r4" style="grid-column:4"><span><b>우승</b><small>Champion</small></span></div>
         <section class="champ" id="champ" aria-live="polite">
           <svg class="trophy" viewBox="0 0 150 160" aria-hidden="true">
             <defs>
@@ -500,7 +550,7 @@ function build() {
     const card = document.createElement("article");
     card.className = "match m" + id;
     card.innerHTML =
-      `<div class="m-head"><span class="no">${mno(id)}</span><span class="st"></span></div>` +
+      `<div class="m-head"><span class="no">${mno(id)}</span><span class="nx">${NEXT[id] ? "승자 → " + mno(NEXT[id][0]) : "승자 → 우승"}</span><span class="st"></span></div>` +
       [0, 1].map(s =>
         `<div class="slot" data-s="${s}">` +
           `<div class="seed">–</div><div class="who"></div>` +
