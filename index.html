@@ -206,6 +206,7 @@ svg.wires path.fresh { stroke-dasharray: 400; stroke-dashoffset: 400; animation:
   background: rgba(0,0,0,.25);
 }
 .m-head .no { color: var(--ball); font-weight: 700; font-style: italic; }
+.m-head .nx { display: none; margin-right: auto; color: var(--muted); font-size: 11px; letter-spacing: .04em; }
 .m-head .st { color: var(--muted); font-family: var(--f-body); font-size: 12px; letter-spacing: 0; }
 .match.done .m-head .st { color: var(--gold); }
 .slot { display: grid; grid-template-columns: 40px minmax(0, 1fr) auto; align-items: stretch; min-height: 72px; }
@@ -222,7 +223,7 @@ svg.wires path.fresh { stroke-dasharray: 400; stroke-dashoffset: 400; animation:
 .score::-webkit-outer-spin-button, .score::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
 .score::placeholder { color: var(--line); }
 .score:read-only { cursor: default; }
-.check { all: unset; box-sizing: border-box; width: 46px; display: grid; place-items: center; cursor: pointer; border-left: 1px solid var(--line); font: 700 12px var(--f-body); color: var(--muted); }
+.check { all: unset; touch-action: manipulation; box-sizing: border-box; width: 46px; display: grid; place-items: center; cursor: pointer; border-left: 1px solid var(--line); font: 700 12px var(--f-body); color: var(--muted); }
 .check .box { width: 22px; height: 22px; border-radius: 6px; border: 2px solid var(--line); display: grid; place-items: center; margin-bottom: 2px; }
 .check:hover .box { border-color: var(--gold); }
 .check[aria-pressed="true"] { color: var(--gold); }
@@ -290,9 +291,9 @@ svg.wires path.fresh { stroke-dasharray: 400; stroke-dashoffset: 400; animation:
 .tcard .st { font-size: 12px; color: var(--muted); margin-top: 4px; }
 .tcard .st.alive { color: var(--silver); }
 .tcard.king .st { color: var(--gold); }
-.tbtn { position: absolute; top: 8px; right: 8px; font: 600 11px var(--f-body); color: var(--muted); background: transparent; border: 1px solid var(--line); border-radius: 6px; padding: 3px 8px; cursor: pointer; }
+.tbtn { position: absolute; top: 8px; right: 8px; min-width: 44px; min-height: 36px; font: 600 12px var(--f-body); color: var(--muted); background: transparent; border: 1px solid var(--line); border-radius: 6px; padding: 4px 10px; cursor: pointer; }
 .tbtn:hover, .tbtn:focus-visible { color: var(--ball); border-color: var(--ball); outline: none; }
-.tcard:has(.tbtn) { padding-right: 56px; }
+.tcard:has(.tbtn) { padding-right: 64px; }
 .tcard.editing { border-color: var(--ball); }
 .tedit { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
 .tin { min-width: 0; font: 500 13px var(--f-body); color: var(--silver); background: var(--panel); border: 1px solid var(--line); border-radius: 6px; padding: 7px 8px; }
@@ -303,10 +304,23 @@ svg.wires path.fresh { stroke-dasharray: 400; stroke-dashoffset: 400; animation:
 .login { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
 .login input { font: 500 14px var(--f-body); color: var(--silver); background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 7px 10px; width: 160px; }
 .login input:focus-visible { outline: 2px solid var(--gold-hi); outline-offset: 1px; }
-.btn { font: 600 13px var(--f-body); color: var(--silver); background: var(--panel-2); border: 1px solid var(--line); border-radius: 8px; padding: 7px 12px; cursor: pointer; }
+.btn { font: 600 13px var(--f-body); color: var(--silver); background: var(--panel-2); border: 1px solid var(--line); border-radius: 8px; padding: 7px 12px; min-height: 40px; cursor: pointer; touch-action: manipulation; }
 .btn:hover { border-color: var(--ball); }
 .btn.ghost { background: transparent; color: var(--muted); }
 .btn.armed { border-color: var(--ball); color: var(--ball); }
+
+/* ---------- team finder ---------- */
+.finder { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; margin-top: 14px; }
+.finder label { font-family: var(--f-display); font-size: 16px; color: var(--ball); }
+.finder input { flex: 0 1 280px; min-width: 0; min-height: 40px; font: 500 15px var(--f-body); color: var(--silver); background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 7px 12px; }
+.finder input:focus-visible { outline: 2px solid var(--gold-hi); outline-offset: 1px; }
+.finder .help { margin: 0; flex-basis: 100%; }
+.finder .help b { color: var(--ball); }
+.slot.mine { box-shadow: inset 4px 0 0 var(--ball); }
+.slot.mine .seed { color: var(--ball); }
+.match.mine { border-color: var(--ball); }
+.tcard.mine { border-color: var(--ball); box-shadow: inset 4px 0 0 var(--ball); }
+.tcard[data-team] { cursor: pointer; }
 
 footer { margin-top: 36px; padding-block: 18px 32px; border-top: 1px solid var(--line); color: var(--muted); font-size: 12px; display: flex; flex-wrap: wrap; gap: 8px 24px; justify-content: space-between; }
 
@@ -316,6 +330,56 @@ footer { margin-top: 36px; padding-block: 18px 32px; border-top: 1px solid var(-
   .crest { width: 72px; height: 72px; }
   .status { grid-template-columns: minmax(0, 1fr); }
   .bracket { grid-template-columns: repeat(3, 236px) 244px; column-gap: 36px; min-width: calc(236px * 3 + 244px + 36px * 3); }
+}
+
+/* Phones: no sideways scrolling. Rounds stack top to bottom (8강 → 4강 → 결승 → 우승); each card says where its winner goes. */
+@media (max-width: 640px) {
+  body { font-size: 16px; }
+  .hero-inner { padding-block: 22px 40px; gap: 18px; }
+  .brand { margin-bottom: 12px; }
+  .crest { width: 60px; height: 60px; }
+  .facts { margin-top: 18px; gap: 6px; }
+  .poster .vert { display: none; }
+  .poster .stamp { width: 74px; height: 74px; }
+  .poster .stamp b { font-size: 23px; }
+  .poster .stamp small { font-size: 10px; }
+  .status { padding-block: 18px 0; gap: 10px; }
+  .progress { gap: 6px; }
+  .progress .arrow { display: none; }
+  .step { padding: 6px 10px; gap: 7px; }
+  .step .nm { font-size: 15px; }
+  .mode { white-space: normal; justify-self: start; }
+  .help { font-size: 14px; }
+  .court, svg.wires { display: none; }
+  .scroller { overflow: visible; padding-block: 6px 28px; }
+  .bracket { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+  .rnd-head { margin: 16px 0 0; }
+  .rnd-head.r1 { order: 1; margin-top: 4px; } .m1, .m2, .m3, .m4 { order: 2; }
+  .rnd-head.r2 { order: 3; } .m5, .m6 { order: 4; }
+  .rnd-head.r3 { order: 5; } .m7 { order: 6; }
+  .rnd-head.r4 { order: 7; } .champ { order: 8; }
+  .match { align-self: stretch; }
+  .m-head { padding: 8px 12px; }
+  .m-head .nx { display: inline; }
+  .slot { min-height: 76px; }
+  .who .tn { font-size: 15px; }
+  .mem span { font-size: 13px; padding: 5px 8px; }
+  .score { width: 52px; font-size: 24px; }
+  .check { width: 56px; }
+  .champ { align-self: stretch; }
+  .teams { grid-template-columns: minmax(0, 1fr); gap: 10px; }
+  .tcard { grid-template-columns: 44px minmax(0, 1fr); }
+  .tcard .n { font-size: 28px; }
+  .tbtn { top: 50%; translate: 0 -50%; min-height: 44px; }
+  .tedit { grid-template-columns: minmax(0, 1fr); }
+  .tcard.editing { padding-right: 14px; }
+  .admin-tools { justify-content: stretch; }
+  .admin-tools > .btn, .login { flex: 1 1 100%; }
+  .admin-tools .btn { min-height: 44px; }
+  .login input { flex: 1; min-width: 0; }
+  /* 16px+ inputs keep iOS Safari from zooming in on focus */
+  .login input, .tin, .finder input { font-size: 16px; min-height: 44px; }
+  .finder input { flex: 1 1 0; }
 }
 </style>
 </head>
@@ -367,6 +431,14 @@ footer { margin-top: 36px; padding-block: 18px 32px; border-top: 1px solid var(-
   </div>
   <p class="help" id="help">경기 결과는 진행 담당이 체크합니다. 이긴 팀은 금색 선을 따라 다음 경기로 올라갑니다.</p>
 
+  <div class="finder" role="search">
+    <label for="find">내 팀 찾기</label>
+    <input id="find" type="search" list="names" placeholder="닉네임 입력 또는 아래 팀 카드 누르기" autocomplete="off" enterkeyhint="search">
+    <datalist id="names"></datalist>
+    <button class="btn ghost" id="findClear" type="button" hidden>지우기</button>
+    <span class="help" id="findMsg" aria-live="polite"></span>
+  </div>
+
   <div class="arena">
     <svg class="court" viewBox="0 0 1000 500" preserveAspectRatio="none" aria-hidden="true">
       <g fill="none" stroke="#e4b443" stroke-opacity=".08" stroke-width="2" vector-effect="non-scaling-stroke">
@@ -385,10 +457,10 @@ footer { margin-top: 36px; padding-block: 18px 32px; border-top: 1px solid var(-
     <div class="scroller">
       <div class="bracket" id="bracket">
         <svg class="wires" id="wires" aria-hidden="true"></svg>
-        <div class="rnd-head" style="grid-column:1"><span><b>8강</b><small>Quarter</small></span></div>
-        <div class="rnd-head" style="grid-column:2"><span><b>4강</b><small>Semi</small></span></div>
-        <div class="rnd-head" style="grid-column:3"><span><b>결승</b><small>Final</small></span></div>
-        <div class="rnd-head" style="grid-column:4"><span><b>우승</b><small>Champion</small></span></div>
+        <div class="rnd-head r1" style="grid-column:1"><span><b>8강</b><small>Quarter</small></span></div>
+        <div class="rnd-head r2" style="grid-column:2"><span><b>4강</b><small>Semi</small></span></div>
+        <div class="rnd-head r3" style="grid-column:3"><span><b>결승</b><small>Final</small></span></div>
+        <div class="rnd-head r4" style="grid-column:4"><span><b>우승</b><small>Champion</small></span></div>
         <section class="champ" id="champ" aria-live="polite">
           <svg class="trophy" viewBox="0 0 150 160" aria-hidden="true">
             <defs>
@@ -406,7 +478,7 @@ footer { margin-top: 36px; padding-block: 18px 32px; border-top: 1px solid var(-
             <rect x="68" y="106" width="14" height="14" fill="url(#tg)"/>
             <path d="M52 120 H98 L104 132 H46 Z" fill="url(#tg)"/>
             <rect x="40" y="132" width="70" height="20" rx="3" fill="url(#tb)" stroke="#e4b443" stroke-opacity=".6"/>
-            <text x="75" y="146" text-anchor="middle" font-family="Oswald, sans-serif" font-weight="700" font-size="10" letter-spacing="2" fill="#e4b443">MAVEN 2</text>
+            <text x="75" y="146" text-anchor="middle" font-family="Oswald, sans-serif" font-weight="700" font-size="10" letter-spacing="2" fill="#e4b443">MAVEN</text>
             <circle cx="75" cy="24" r="18" fill="url(#ball)"/>
             <g fill="none" stroke="#5a2306" stroke-width="1.6">
               <path d="M57 24 H93"/><path d="M75 6 V42"/>
@@ -432,6 +504,8 @@ footer { margin-top: 36px; padding-block: 18px 32px; border-top: 1px solid var(-
 
   <div class="admin-tools">
     <span class="help" id="updated" style="margin:0"></span>
+    <span class="help" id="shareMsg" style="margin:0" aria-live="polite"></span>
+    <button class="btn" id="share" type="button">결과 공유</button>
     <button class="btn ghost" id="openLogin" type="button">진행 담당</button>
     <form id="login" class="login" hidden>
       <input id="pin" type="password" autocomplete="current-password" placeholder="체크 키" aria-label="체크 키">
@@ -481,6 +555,8 @@ const MATCHES = {
 const NEXT = { 1: [5, 0], 2: [5, 1], 3: [6, 0], 4: [6, 1], 5: [7, 0], 6: [7, 1] };
 const ROUNDS = [["8강", [1, 2, 3, 4]], ["4강", [5, 6]], ["결승", [7]]];
 const PIN_KEY = "maven-bracket-pin";
+const MINE_KEY = "maven-bracket-mine";   // this viewer's own team pick (local convenience only)
+let mine = null;                          // team index highlighted by "내 팀 찾기"
 const pad = n => String(n + 1).padStart(2, "0");
 const mno = id => "#" + String(id).padStart(2, "0");
 
@@ -488,6 +564,7 @@ const mno = id => "#" + String(id).padStart(2, "0");
 let results = {};
 let sb = null, pin = null, isAdmin = false, ready = false;
 let queue = Promise.resolve();   // admin writes go out one at a time, in order
+let pending = 0;                 // admin writes not yet confirmed; server reloads wait until these land
 const prevOn = new Set();
 const prevTeam = {};
 
@@ -499,7 +576,7 @@ function build() {
     const card = document.createElement("article");
     card.className = "match m" + id;
     card.innerHTML =
-      `<div class="m-head"><span class="no">${mno(id)}</span><span class="st"></span></div>` +
+      `<div class="m-head"><span class="no">${mno(id)}</span><span class="nx">${NEXT[id] ? "승자 → " + mno(NEXT[id][0]) : "승자 → 우승"}</span><span class="st"></span></div>` +
       [0, 1].map(s =>
         `<div class="slot" data-s="${s}">` +
           `<div class="seed">–</div><div class="who"></div>` +
@@ -519,7 +596,8 @@ function build() {
     }));
     card.querySelectorAll(".score").forEach((inp, s) => inp.addEventListener("change", () => {
       const cur = results[id] || {};
-      const v = inp.value === "" ? null : Math.max(0, Math.floor(+inp.value));
+      const v = inp.value === "" || !isFinite(+inp.value) ? null : Math.min(999, Math.max(0, Math.floor(+inp.value)));
+      inp.value = v == null ? "" : v;
       const next = { w: cur.w ?? null, a: cur.a ?? null, b: cur.b ?? null };
       next[s ? "b" : "a"] = v;
       save(+id, next);
@@ -542,12 +620,15 @@ const memHTML = t => TEAMS[t].map(n => `<span>${esc(n)}</span>`).join("");
 
 /* ---------- storage ---------- */
 function enqueue(job) {
+  pending++;
   queue = queue.then(job).catch(e => {
     if (e && e.code === "28P01") { logout(); setMode("warn", "PIN이 바뀌었거나 틀렸습니다. 다시 로그인해 주세요"); }
     else setMode("warn", "저장하지 못했습니다. 다시 체크해 주세요");
-    load();
-  });
+    return load();
+  }).finally(() => { pending--; });
 }
+// Reload from the server unless this tab has writes in flight or a roster form open (a reload would undo or wipe them).
+function canReload() { return !isAdmin || (pending === 0 && editing == null); }
 async function rpc(fn, args) {
   const { error } = await sb.rpc(fn, args);
   if (error) throw error;
@@ -631,8 +712,9 @@ openLogin.addEventListener("click", () => { loginForm.hidden = false; openLogin.
 loginForm.addEventListener("submit", async e => {
   e.preventDefault();
   const p = pinInput.value;
-  if (!p || !sb) return;
   const msg = document.getElementById("loginMsg");
+  if (!sb) { msg.textContent = "결과 서버에 연결되지 않아 체크할 수 없습니다"; return; }
+  if (!p) { msg.textContent = "체크 키를 입력해 주세요"; pinInput.focus(); return; }
   msg.textContent = "확인 중…";
   if (await tryPin(p)) {
     pin = p; isAdmin = true; pinInput.value = ""; msg.textContent = "";
@@ -664,6 +746,7 @@ function render() {
     const ws = winnerSide(id);
     const r = results[id] || {};
     card.classList.toggle("done", ws != null);
+    card.classList.toggle("mine", mine != null && t.includes(mine));
     card.querySelector(".st").textContent =
       ws != null ? `TEAM ${pad(t[ws])} 진출 ▶` : both ? `${m.round} · 경기 전` : `${m.round} · 상대 기다리는 중`;
 
@@ -683,11 +766,12 @@ function render() {
       inp.readOnly = !isAdmin || !both;
       inp.tabIndex = isAdmin ? 0 : -1;
       if (document.activeElement !== inp) inp.value = v == null ? "" : v;
-      inp.hidden = !isAdmin && v == null;
+      inp.hidden = !isAdmin && r.a == null && r.b == null;   // show both scores if either is set, so rows line up
       const chk = slot.querySelector(".check");
       chk.hidden = !isAdmin;
       chk.disabled = !both;
       chk.setAttribute("aria-pressed", String(ws === s));
+      slot.classList.toggle("mine", mine != null && team === mine);
       slot.classList.toggle("win", ws === s);
       slot.classList.toggle("lose", ws != null && ws !== s);
     });
@@ -702,6 +786,7 @@ function render() {
 
   progress();
   roster();
+  findStatus();
   wires();
   const times = Object.values(results).map(r => r.updated_at).filter(Boolean).sort();
   document.getElementById("updated").textContent = times.length
@@ -737,7 +822,7 @@ function roster() {
         `<button class="btn ghost" type="button" data-act="cancel">취소</button><span class="help" id="teamMsg" style="margin:0"></span></div></div></div>`;
     }
     const edit = isAdmin ? `<button class="tbtn" type="button" data-act="edit" data-i="${i}" aria-label="TEAM ${pad(i)} 명단 수정">수정</button>` : "";
-    return `<div class="tcard ${cls}"><div class="n">${pad(i)}</div><div><div class="mem">${memHTML(i)}</div><div class="st ${cls ? "" : "alive"}">${st}</div></div>${edit}</div>`;
+    return `<div class="tcard ${cls} ${i === mine ? "mine" : ""}" data-team="${i}" title="이 팀 경기 표시"><div class="n">${pad(i)}</div><div><div class="mem">${memHTML(i)}</div><div class="st ${cls ? "" : "alive"}">${st}</div></div>${edit}</div>`;
   }).join("");
 }
 
@@ -748,7 +833,12 @@ teamsEl.addEventListener("input", e => {
 });
 teamsEl.addEventListener("click", async e => {
   const btn = e.target.closest("button[data-act]");
-  if (!btn || !isAdmin) return;
+  if (!btn) {
+    const card = e.target.closest(".tcard[data-team]");
+    if (card) { findInput.value = ""; pickTeam(+card.dataset.team === mine ? null : +card.dataset.team, true); }
+    return;
+  }
+  if (!isAdmin) return;
   const act = btn.dataset.act;
   if (act === "edit") { editing = +btn.dataset.i; draft = TEAMS[editing].slice(); render(); document.getElementById(`t${editing}-0`)?.focus(); return; }
   if (act === "cancel") { editing = null; render(); return; }
@@ -767,6 +857,103 @@ teamsEl.addEventListener("click", async e => {
     TEAMS[i] = members; editing = null; ticker(); render();
   }
 });
+
+/* ---------- 결과 공유 (단톡방에 붙여 넣을 글) ---------- */
+function summaryText() {
+  const name = t => `TEAM ${pad(t)}(${TEAMS[t].join("·")})`;
+  const lines = ["🏀 MaveN 클럽 내전 대진표"];
+  for (const [nm, ids] of ROUNDS) {
+    lines.push("", `[${nm}]`);
+    for (const id of ids) {
+      const t = sidesOf(id), ws = winnerSide(id), r = results[id] || {};
+      const side = s => t[s] != null ? name(t[s]) : `${mno(String(MATCHES[id].sides[s]).slice(1))} 승자`;
+      const score = r.a != null || r.b != null ? ` ${r.a ?? "-"} : ${r.b ?? "-"} ` : " vs ";
+      lines.push(`${mno(id)} ${side(0)}${score}${side(1)}` + (ws != null ? ` → TEAM ${pad(t[ws])} 승` : ""));
+    }
+  }
+  const champ = winnerOf(7);
+  lines.push("", champ != null ? `🏆 우승: ${name(champ)}` : "🏆 우승: 결승 진행 전");
+  lines.push(location.origin + location.pathname);   // never the hash: a check link carries the key there
+  return lines.join("\n");
+}
+const shareBtn = document.getElementById("share");
+shareBtn.addEventListener("click", async () => {
+  const text = summaryText();
+  const msg = document.getElementById("shareMsg");
+  if (navigator.share && matchMedia("(pointer: coarse)").matches) {
+    try { await navigator.share({ title: "MaveN 클럽 내전", text }); return; }
+    catch (e) { if (e && e.name === "AbortError") return; }
+  }
+  let ok = false;
+  try { await navigator.clipboard.writeText(text); ok = true; } catch (e) {
+    const ta = Object.assign(document.createElement("textarea"), { value: text });
+    ta.setAttribute("readonly", ""); ta.style.cssText = "position:fixed;opacity:0";
+    document.body.appendChild(ta); ta.select();
+    try { ok = document.execCommand("copy"); } catch (e2) {}
+    ta.remove();
+  }
+  msg.textContent = ok ? "결과를 복사했습니다. 단톡방에 붙여 넣으세요" : "복사하지 못했습니다";
+  clearTimeout(shareBtn._t); shareBtn._t = setTimeout(() => { msg.textContent = ""; }, 4000);
+});
+
+/* ---------- 내 팀 찾기 ---------- */
+const findInput = document.getElementById("find");
+const findClear = document.getElementById("findClear");
+function teamByName(q) {
+  q = q.trim().toLowerCase();
+  if (!q) return null;
+  const hit = f => TEAMS.findIndex(m => m.some(n => f(n.toLowerCase())));
+  let i = hit(n => n === q);
+  if (i < 0) {   // partial match only when it points at a single team
+    const teams = new Set(TEAMS.flatMap((m, k) => m.some(n => n.toLowerCase().includes(q)) ? [k] : []));
+    i = teams.size === 1 ? [...teams][0] : -1;
+  }
+  return i < 0 ? -1 : i;
+}
+// The furthest match the team has reached (that is where it is playing next, or where it went out).
+function latestMatch(team) {
+  let last = null;
+  for (const id of Object.keys(MATCHES)) if (sidesOf(id).includes(team)) last = +id;
+  return last;
+}
+function findStatus() {
+  const msg = document.getElementById("findMsg");
+  findClear.hidden = mine == null && !findInput.value;
+  if (mine == null) {
+    msg.textContent = findInput.value.trim() && teamByName(findInput.value) === -1 ? "그 닉네임은 명단에 없습니다 (여러 팀에 걸리면 더 길게 입력해 주세요)" : "";
+    return;
+  }
+  const id = latestMatch(mine);
+  const ws = winnerSide(id), t = sidesOf(id);
+  const opp = t[1 - t.indexOf(mine)];
+  const state = winnerOf(7) === mine ? "우승!"
+    : ws != null ? `${MATCHES[id].round} 탈락`
+    : opp != null ? `다음 경기 ${mno(id)} ${MATCHES[id].round} · 상대 TEAM ${pad(opp)}`
+    : `다음 경기 ${mno(id)} ${MATCHES[id].round} · 상대는 ${mno(String(MATCHES[id].sides[1 - t.indexOf(mine)]).slice(1))} 승자`;
+  msg.innerHTML = `<b>TEAM ${pad(mine)}</b> (${TEAMS[mine].map(esc).join(" · ")}) — ${esc(state)}`;
+}
+function pickTeam(i, scroll, keepText) {
+  mine = i;
+  if (i == null && !keepText) findInput.value = "";
+  try { i == null ? localStorage.removeItem(MINE_KEY) : localStorage.setItem(MINE_KEY, String(i)); } catch (e) {}
+  render();
+  if (scroll && i != null) {
+    const smooth = matchMedia("(prefers-reduced-motion: no-preference)").matches ? "smooth" : "auto";
+    els[latestMatch(i)]?.scrollIntoView({ behavior: smooth, block: "center", inline: "center" });
+  }
+}
+function fillNames() {
+  document.getElementById("names").innerHTML = TEAMS.flat().map(n => `<option value="${esc(n)}"></option>`).join("");
+}
+findInput.addEventListener("input", e => {
+  const i = teamByName(findInput.value);
+  const picked = e.inputType === "insertReplacementText" || !e.inputType;   // chosen from the suggestion list
+  if (i != null && i >= 0) { if (i !== mine || picked) pickTeam(i, picked); }
+  else if (mine != null) pickTeam(null, false, true);
+  findStatus();
+});
+findInput.addEventListener("keydown", e => { if (e.key === "Enter" && mine != null) { e.preventDefault(); pickTeam(mine, true); findInput.blur(); } });
+findClear.addEventListener("click", () => { pickTeam(null, false); findInput.focus(); });
 
 function wires() {
   const svg = document.getElementById("wires");
@@ -793,6 +980,7 @@ function wires() {
 /* ---------- boot ---------- */
 async function boot() {
   build();
+  try { const m = localStorage.getItem(MINE_KEY); if (m != null && +m >= 0 && +m < 8) mine = +m; } catch (e) {}
   render();
   if (!window.supabase) { setMode("warn", "결과 서버에 연결하지 못했습니다"); return; }
   sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, { auth: { persistSession: false } });
@@ -816,11 +1004,11 @@ async function boot() {
   applyAdmin();
   await load();
   sb.channel("maven-bracket")
-    .on("postgres_changes", { event: "*", schema: "public", table: "maven_bracket_results" }, () => { if (!isAdmin) load(); })
+    .on("postgres_changes", { event: "*", schema: "public", table: "maven_bracket_results" }, () => { if (canReload()) load(); })
     .on("postgres_changes", { event: "*", schema: "public", table: "maven_bracket_teams" }, () => { if (editing == null) loadTeams().then(render); })
     .subscribe();
   // Safety net if realtime is blocked on someone's network.
-  setInterval(() => { if (!isAdmin && document.visibilityState === "visible") load(); }, 20000);
+  setInterval(() => { if (canReload() && document.visibilityState === "visible") load(); }, 20000);
 }
 
 // Team ticker under the poster; two copies so the loop is seamless.
@@ -829,6 +1017,7 @@ function ticker() {
   if (!el) return;
   const seg = `<div class="seg">${TEAMS.map((m, i) => `<span><b>TEAM ${pad(i)}</b>${m.map(esc).join(" · ")}</span><i>★</i>`).join("")}</div>`;
   el.innerHTML = seg + seg;
+  fillNames();
 }
 
 ticker();
